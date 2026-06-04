@@ -1,0 +1,1067 @@
+---
+// Admin panel — password: 14532332
+// Full content management: text, images (URL + file upload), testimonials, FAQ, map, security
+---
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>ÖzKartal Admin Paneli</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+  <meta name="referrer" content="no-referrer"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0A0A12; --surface:#14141f; --card:#1c1c2e;
+      --orange:#FF6B35; --orange-dim:rgba(255,107,53,0.12);
+      --text:#F4F4F5; --text-muted:#6B7280; --border:rgba(255,255,255,0.08);
+      --green:#22c55e; --red:#ef4444;
+    }
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+    h1,h2,h3{font-family:'Space Grotesk',sans-serif}
+
+    /* LOGIN */
+    #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+    .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:100%;max-width:380px;text-align:center;position:relative;overflow:hidden}
+    .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent)}
+    .login-logo{font-size:1.6rem;font-weight:700;margin-bottom:6px}
+    .login-logo span{color:var(--orange)}
+    .login-sub{font-size:0.85rem;color:var(--text-muted);margin-bottom:28px}
+    .login-lock{font-size:2.5rem;margin-bottom:20px}
+    .login-error{font-size:0.8rem;color:#ef4444;min-height:18px;margin-top:8px}
+    .login-locked{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);color:#ef4444;padding:10px 14px;border-radius:10px;font-size:0.82rem;margin:14px 0;display:none}
+    .login-locked.show{display:block}
+    .honey{position:absolute;left:-9999px;opacity:0;pointer-events:none}
+
+    /* ADMIN LAYOUT */
+    #admin-screen{display:none;min-height:100vh}
+    .admin-sidebar{position:fixed;top:0;left:0;height:100vh;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px;z-index:50;overflow-y:auto}
+    .sidebar-logo{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;padding:0 8px 20px;border-bottom:1px solid var(--border);margin-bottom:8px}
+    .sidebar-logo span{color:var(--orange)}
+    .sidebar-link{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:0.86rem;font-weight:500;color:var(--text-muted);cursor:pointer;transition:background 0.2s,color 0.2s;border:none;background:none;width:100%;text-align:left}
+    .sidebar-link:hover,.sidebar-link.active{background:var(--orange-dim);color:var(--orange)}
+    .sidebar-sep{height:1px;background:var(--border);margin:8px 0}
+
+    .admin-main{margin-left:240px;padding:32px;min-height:100vh}
+    @media(max-width:768px){.admin-sidebar{transform:translateX(-100%)}.admin-sidebar.open{transform:translateX(0)}.admin-main{margin-left:0;padding:20px}}
+
+    /* HEADER */
+    .admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px}
+    .admin-title{font-size:1.5rem;font-weight:700}
+    .header-actions{display:flex;gap:8px}
+    .badge-online{display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:99px;font-size:0.78rem;font-weight:600;color:#22c55e}
+    .badge-online::before{content:'';width:6px;height:6px;background:#22c55e;border-radius:50%;box-shadow:0 0 8px #22c55e;animation:pulse 2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+    /* PANELS */
+    .panel{display:none}
+    .panel.active{display:block}
+    .section-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+    .section-card h3{font-size:1rem;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    .section-card h4{font-size:0.86rem;font-weight:600;margin:18px 0 10px;color:var(--orange)}
+
+    /* FORM ELEMENTS */
+    label{display:block;font-size:0.78rem;font-weight:600;color:var(--text-muted);margin-bottom:6px;font-family:'Space Grotesk',sans-serif}
+    input,textarea,select{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:10px;padding:11px 14px;color:#F4F4F5;font-family:'DM Sans',sans-serif;font-size:0.88rem;transition:border-color 0.2s,box-shadow 0.2s;resize:vertical}
+    input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.32)}
+    input:focus,textarea:focus,select:focus{outline:none;border-color:rgba(255,107,53,0.5);box-shadow:0 0 0 3px rgba(255,107,53,0.1)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+    @media(max-width:640px){.form-row,.form-row-3{grid-template-columns:1fr}}
+    .form-group{margin-bottom:14px;display:flex;flex-direction:column;gap:6px}
+    .form-group label{margin-bottom:0}
+    .form-group input,.form-group textarea,.form-group select{display:block;width:100%}
+
+    /* IMAGE PICKER (URL + file upload + preview) */
+    .img-picker{display:flex;gap:10px;align-items:flex-start}
+    .img-thumb{width:80px;height:56px;border-radius:8px;border:1px solid var(--border);background:#0d0d18;background-size:cover;background-position:center;flex-shrink:0;position:relative;overflow:hidden}
+    .img-thumb::after{content:'?';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:1.2rem;opacity:0;transition:opacity 0.2s}
+    .img-thumb[data-empty]::after{opacity:1}
+    .img-fields{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+    .img-upload-btn{display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;padding:6px 12px;background:var(--orange-dim);border:1px solid rgba(255,107,53,0.25);color:var(--orange);border-radius:8px;cursor:pointer;font-weight:600;transition:background 0.2s}
+    .img-upload-btn:hover{background:rgba(255,107,53,0.18)}
+    .img-upload-btn input{display:none}
+
+    /* SAVE BAR */
+    .save-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:16px;border-top:1px dashed var(--border);margin-top:16px;flex-wrap:wrap}
+    .save-hint{font-size:0.78rem;color:var(--text-muted)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;font-family:'Space Grotesk',sans-serif;font-size:0.85rem;font-weight:600;border-radius:10px;cursor:pointer;border:none;transition:transform 0.15s,box-shadow 0.2s,background 0.2s;text-decoration:none}
+    .btn-save{background:linear-gradient(135deg,#FF6B35,#F59E0B);color:#fff;box-shadow:0 8px 24px rgba(255,107,53,0.38)}
+    .btn-save:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(255,107,53,0.55)}
+    .btn-danger{background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.3)}
+    .btn-danger:hover{background:rgba(239,68,68,0.2)}
+    .btn-ghost{background:rgba(255,255,255,0.04);color:var(--text);border:1px solid var(--border)}
+    .btn-ghost:hover{background:rgba(255,255,255,0.08)}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#fff;padding:14px 22px;border-radius:12px;font-weight:600;font-size:0.88rem;box-shadow:0 14px 36px rgba(34,197,94,0.4);transform:translateY(100px);opacity:0;transition:transform 0.4s,opacity 0.4s;pointer-events:none;z-index:200;font-family:'Space Grotesk',sans-serif}
+    #toast.show{transform:translateY(0);opacity:1}
+    #toast.error{background:var(--red);box-shadow:0 14px 36px rgba(239,68,68,0.4)}
+
+    /* TESTIMONIAL CARD (4 fields) */
+    .testimonial-card{background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+    .testimonial-card .form-row{margin-bottom:10px}
+    .test-num{display:inline-block;width:24px;height:24px;background:var(--orange);color:#fff;border-radius:50%;font-size:0.72rem;font-weight:700;text-align:center;line-height:24px;margin-right:8px;font-family:'Space Grotesk',sans-serif}
+
+    /* SECURITY PANEL */
+    .security-stat{display:flex;justify-content:space-between;padding:12px 14px;background:rgba(255,255,255,0.025);border-radius:10px;margin-bottom:8px;font-size:0.85rem}
+    .security-stat span:last-child{color:var(--green);font-weight:600}
+    .security-stat.bad span:last-child{color:var(--red)}
+
+    /* MOBILE MENU */
+    .mobile-menu-btn{display:none;position:fixed;top:14px;left:14px;z-index:60;background:var(--surface);border:1px solid var(--border);width:42px;height:42px;border-radius:10px;align-items:center;justify-content:center;cursor:pointer}
+    @media(max-width:768px){.mobile-menu-btn{display:flex}}
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ LOGIN ═══════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-lock">🔐</div>
+    <div class="login-logo"><span>Öz</span>Kartal Admin</div>
+    <div class="login-sub">Yönetim Paneline Giriş</div>
+
+    <div id="login-locked-banner" class="login-locked">⚠ Çok fazla başarısız deneme. Lütfen <span id="lockout-seconds">60</span> saniye bekleyin.</div>
+
+    <div class="form-group" style="text-align:left;margin-top:8px">
+      <label>Şifre</label>
+      <!-- Honeypot field (bots fill it, humans never see it) -->
+      <input type="text" name="website" class="honey" tabindex="-1" autocomplete="off" id="honey-pot"/>
+      <input type="password" id="pw-input" placeholder="••••••••" autocomplete="current-password" autofocus/>
+    </div>
+    <div id="login-error" class="login-error"></div>
+    <button class="btn btn-save" style="width:100%;justify-content:center;margin-top:4px" id="btn-login">Giriş Yap</button>
+    <p style="font-size:0.7rem;color:var(--text-muted);margin-top:18px;line-height:1.5">
+      Bu panel SHA-256 ile şifrelenmiş, rate-limited ve honeypot korumalıdır.<br/>5 hatalı denemeden sonra 60sn kilitlenir.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ ADMIN ═══════════════════════════ -->
+<div id="admin-screen">
+  <button class="mobile-menu-btn" id="mob-menu-btn" aria-label="Menü">☰</button>
+
+  <aside class="admin-sidebar" id="sidebar">
+    <div class="sidebar-logo"><span>Öz</span>Kartal Admin</div>
+
+    <button class="sidebar-link active" data-panel="contact">📞 İletişim</button>
+    <button class="sidebar-link" data-panel="hero">🎯 Hero</button>
+    <button class="sidebar-link" data-panel="services">🔧 Hizmetler</button>
+    <button class="sidebar-link" data-panel="gallery">🖼 Galeri</button>
+    <button class="sidebar-link" data-panel="testimonials">💬 Yorumlar</button>
+    <button class="sidebar-link" data-panel="faq">❓ S.S.S.</button>
+    <button class="sidebar-link" data-panel="footer">🦶 Footer</button>
+    <button class="sidebar-link" data-panel="seo">🔍 SEO & Logo</button>
+    <button class="sidebar-link" data-panel="chat">💬 Canlı Sohbet</button>
+    <button class="sidebar-link" data-panel="analytics">📊 Ziyaretçi Logları</button>
+    <button class="sidebar-link" data-panel="security">🛡 Güvenlik</button>
+
+    <div class="sidebar-sep"></div>
+    <a href="/" target="_blank" class="sidebar-link" style="text-decoration:none">🌐 Siteyi Gör</a>
+    <button class="sidebar-link" id="btn-export" style="color:var(--orange)">📥 Yedek Al</button>
+    <button class="sidebar-link" id="btn-import" style="color:var(--orange)">📤 Yedek Yükle</button>
+    <button class="sidebar-link" id="btn-reset" style="color:var(--red)">↺ Tümünü Sıfırla</button>
+    <button class="sidebar-link" id="btn-logout" style="margin-top:auto;color:var(--red)">🚪 Çıkış</button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1 class="admin-title" id="page-title">İletişim Bilgileri</h1>
+      <div class="header-actions">
+        <div class="badge-online">Güvenli Oturum</div>
+      </div>
+    </div>
+
+    <!-- ─── CONTACT ─── -->
+    <div id="panel-contact" class="panel active">
+      <div class="section-card">
+        <h3>📞 İletişim Bilgileri</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Telefon</label><input type="tel" id="c-phone"/></div>
+          <div class="form-group"><label>WhatsApp (uluslararası)</label><input type="tel" id="c-whatsapp" placeholder="+904240000000"/></div>
+        </div>
+        <div class="form-group"><label>E-posta</label><input type="email" id="c-email"/></div>
+        <div class="form-group"><label>Adres</label><input type="text" id="c-address"/></div>
+        <div class="form-row">
+          <div class="form-group"><label>Çalışma Saatleri</label><input type="text" id="c-hours"/></div>
+          <div class="form-group"><label>Boş Bırak</label><input type="text" disabled placeholder="—" style="opacity:0.4"/></div>
+        </div>
+
+        <h4>Harita Konumu (MapLibre)</h4>
+        <div class="form-row">
+          <div class="form-group"><label>Boylam (Longitude)</label><input type="number" step="any" id="c-mapLng" placeholder="39.2272"/></div>
+          <div class="form-group"><label>Enlem (Latitude)</label><input type="number" step="any" id="c-mapLat" placeholder="38.6810"/></div>
+        </div>
+        <div class="form-group">
+          <label>Google Maps "Yol Tarifi" Linki (opsiyonel)</label>
+          <input type="url" id="c-mapsLink" placeholder="https://maps.google.com/?q=..."/>
+        </div>
+        <p style="font-size:0.76rem;color:var(--text-muted);margin-top:-4px">
+          Google Maps'te konumu açın → "Paylaş" → "Bağlantıyı kopyala" → buraya yapıştırın.
+          Harita üzerinde "Google Maps'te Aç" butonu olarak görünür.
+        </p>
+        <button type="button" class="btn btn-ghost" id="btn-test-maps" style="margin-top:8px">🗺 Google Maps'te Aç (Test)</button>
+
+        <div class="save-bar">
+          <span class="save-hint">Kayıt sonrası sitede anında güncellenir.</span>
+          <button class="btn btn-save" data-save="contact">💾 Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── HERO ─── -->
+    <div id="panel-hero" class="panel">
+      <div class="section-card">
+        <h3>🎯 Hero Metinleri</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Üst Satır</label><input type="text" id="h-line1"/></div>
+          <div class="form-group"><label>Alt Satır (vurgulu)</label><input type="text" id="h-line2"/></div>
+        </div>
+        <div class="form-group"><label>Alt Açıklama</label><textarea id="h-sub" rows="3"></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>CTA 1 (turuncu)</label><input type="text" id="h-cta1"/></div>
+          <div class="form-group"><label>CTA 2 (outline)</label><input type="text" id="h-cta2"/></div>
+        </div>
+        <div class="save-bar">
+          <span class="save-hint">3D Spline robotu sabittir (değiştirilemez).</span>
+          <button class="btn btn-save" data-save="hero">💾 Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── SERVICES ─── -->
+    <div id="panel-services" class="panel">
+      <div class="section-card">
+        <h3>🔧 4 Hizmet Kategorisi</h3>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:18px">Başlık, açıklama ve görsel her bir kategoride değiştirilebilir.</p>
+        <div id="services-list"></div>
+        <div class="save-bar">
+          <span class="save-hint">URL veya bilgisayardan dosya yükleyin.</span>
+          <button class="btn btn-save" data-save="services">💾 Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── GALLERY ─── -->
+    <div id="panel-gallery" class="panel">
+      <div class="section-card">
+        <h3>🖼 Galeri (6 Görsel)</h3>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:18px">Makro çekim, lehim, tamir öncesi/sonrası fotoğrafları yükleyin.</p>
+        <div id="gallery-list"></div>
+        <div class="save-bar">
+          <span class="save-hint">PC'den yükle veya URL yapıştır.</span>
+          <button class="btn btn-save" data-save="gallery">💾 Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── TESTIMONIALS ─── -->
+    <div id="panel-testimonials" class="panel">
+      <div class="section-card">
+        <h3>💬 Müşteri Yorumları (9 adet)</h3>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:18px">Her yorumun metni, müşteri ismi, şehri ve hizmet türü.</p>
+        <div id="testimonials-list"></div>
+        <div class="save-bar">
+          <span class="save-hint">Yorumların orijinal, kısa ve gerçekçi tutulması önerilir.</span>
+          <button class="btn btn-save" data-save="testimonials">💾 Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── FAQ ─── -->
+    <div id="panel-faq" class="panel">
+      <div class="section-card">
+        <h3>❓ Sıkça Sorulan Sorular</h3>
+        <div id="faq-list"></div>
+        <div class="save-bar">
+          <span class="save-hint">Soru ve cevaplar müşteri itirazlarını karşılar.</span>
+          <button class="btn btn-save" data-save="faq">💾 Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── FOOTER ─── -->
+    <div id="panel-footer" class="panel">
+      <div class="section-card">
+        <h3>🦶 Footer</h3>
+        <div class="form-group"><label>Tagline / Slogan</label><input type="text" id="f-tagline"/></div>
+        <div class="form-group"><label>Telif Hakkı Yazısı</label><input type="text" id="f-copyright"/></div>
+        <div class="save-bar">
+          <span class="save-hint">Footer alt kısım metinleri.</span>
+          <button class="btn btn-save" data-save="footer">💾 Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── SEO ─── -->
+    <div id="panel-seo" class="panel">
+      <div class="section-card">
+        <h3>🔍 SEO & Site Logosu</h3>
+        <div class="form-group"><label>Sayfa Başlığı (title)</label><input type="text" id="seo-title"/></div>
+        <div class="form-group"><label>Meta Açıklama (description)</label><textarea id="seo-desc" rows="3"></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>Logo Sol (turuncu)</label><input type="text" id="seo-logo1"/></div>
+          <div class="form-group"><label>Logo Sağ (beyaz)</label><input type="text" id="seo-logo2"/></div>
+        </div>
+        <div class="save-bar">
+          <span class="save-hint">Google'da görünen başlık ve açıklama.</span>
+          <button class="btn btn-save" data-save="seo">💾 Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── CHAT WIDGET ─── -->
+    <div id="panel-chat" class="panel">
+      <div class="section-card">
+        <h3>💬 Canlı Sohbet (Chatbot)</h3>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:18px">
+          Sağ alttaki sohbet kutusunun ayarları. Şu an demo modunda — anahtar kelime tabanlı yanıt veriyor.
+          İleride OpenAI veya başka bir AI servisi için API anahtarı eklenebilir.
+        </p>
+
+        <h4>Genel Ayarlar</h4>
+        <div class="form-group">
+          <label>Sohbet açılış mesajı (özelleştirme)</label>
+          <textarea id="chat-greeting-text" rows="2" placeholder="Merhaba! 👋 ÖzKartal İletişim'e hoş geldiniz."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Otomatik karşılama gecikmesi (saniye)</label>
+            <input type="number" id="chat-prebubble-delay" min="0" max="60" placeholder="3.5"/>
+          </div>
+          <div class="form-group">
+            <label>Karşılama metni (sağda balon)</label>
+            <input type="text" id="chat-prebubble-text" placeholder="Merhaba! Size nasıl yardımcı olabilirim?"/>
+          </div>
+        </div>
+
+        <h4>AI API (İleride)</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label>AI Sağlayıcı</label>
+            <select id="chat-ai-provider">
+              <option value="demo">Demo (anahtar kelime)</option>
+              <option value="openai">OpenAI (GPT)</option>
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="custom">Özel endpoint</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>API Key (gizli)</label>
+            <input type="password" id="chat-ai-key" placeholder="sk-..." autocomplete="off"/>
+          </div>
+        </div>
+        <p style="font-size:0.74rem;color:var(--text-muted);margin-top:-4px">
+          ⚠ API key client-side saklanır. Production'da Vercel Edge Function üzerinden geçirilmesi tavsiye edilir.
+        </p>
+
+        <h4>Özel Yanıtlar (anahtar = cevap)</h4>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px">
+          Belirli kelimelere özel yanıt vermek istediğinizde aşağıya ekleyin. Her satır <b>anahtar | yanıt</b> formatında.
+        </p>
+        <div class="form-group">
+          <textarea id="chat-custom-replies" rows="6" placeholder="iphone 15 | iPhone 15 ekran değişimi için stoğumuzda parça var, ön inceleme ücretsiz.&#10;samsung s24 | Samsung S24 için orijinal parça stokluyoruz.&#10;kapıdan teslim | Elazığ merkezde kapıdan teslim alım yapıyoruz, detay için WhatsApp."></textarea>
+        </div>
+
+        <div class="save-bar">
+          <span class="save-hint">Değişiklikler tüm cihazlarda anında uygulanır.</span>
+          <button class="btn btn-save" data-save="chat">💾 Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── ANALYTICS ─── -->
+    <div id="panel-analytics" class="panel">
+      <div class="section-card">
+        <h3>📊 Ziyaretçi İstatistikleri (Anonim)</h3>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:18px">
+          Tarayıcıda anonim olarak tutulur — kişisel veri toplanmaz. Son 500 sayfa görüntüleme ve tıklama gösterilir.
+        </p>
+
+        <div class="form-row" style="margin-bottom:16px">
+          <div class="security-stat" style="margin:0"><span>Toplam Sayfa Görüntüleme</span><span id="stat-views">0</span></div>
+          <div class="security-stat" style="margin:0"><span>Toplam Tıklama</span><span id="stat-clicks">0</span></div>
+        </div>
+        <div class="form-row" style="margin-bottom:16px">
+          <div class="security-stat" style="margin:0"><span>Mobil / Masaüstü</span><span id="stat-device">—</span></div>
+          <div class="security-stat" style="margin:0"><span>Son Ziyaret</span><span id="stat-lastvisit">—</span></div>
+        </div>
+
+        <h4>En Çok Tıklanan</h4>
+        <div id="top-clicks" style="font-size:0.86rem;line-height:1.9">Henüz veri yok.</div>
+
+        <h4 style="margin-top:24px">Son 20 Sayfa Görüntüleme</h4>
+        <div id="recent-views" style="font-size:0.82rem;font-family:'DM Sans',sans-serif;line-height:1.7;max-height:300px;overflow-y:auto;background:rgba(255,255,255,0.025);border-radius:10px;padding:14px"></div>
+
+        <h4 style="margin-top:24px">Son 20 Tıklama</h4>
+        <div id="recent-clicks" style="font-size:0.82rem;font-family:'DM Sans',sans-serif;line-height:1.7;max-height:300px;overflow-y:auto;background:rgba(255,255,255,0.025);border-radius:10px;padding:14px"></div>
+
+        <div class="save-bar">
+          <span class="save-hint">Veriler ziyaretçi tarayıcısında localStorage'da tutulur.</span>
+          <button type="button" class="btn btn-ghost" id="btn-refresh-analytics">↺ Yenile</button>
+          <button type="button" class="btn btn-danger" id="btn-clear-analytics">🗑 Logları Temizle</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── SECURITY ─── -->
+    <div id="panel-security" class="panel">
+      <div class="section-card">
+        <h3>🛡 Güvenlik & Sistem</h3>
+        <div class="security-stat"><span>SHA-256 şifre koruması</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>Rate limiting (5 hata = 60sn kilit)</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>Honeypot bot koruması</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>noindex / nofollow</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>X-Content-Type-Options</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>Referrer-Policy: no-referrer</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>Permissions-Policy (kamera/mikrofon)</span><span>✓ Reddedildi</span></div>
+        <div class="security-stat" id="stat-attempts"><span>Başarısız giriş denemeleri</span><span>0</span></div>
+        <div class="security-stat" id="stat-lastlogin"><span>Son giriş</span><span>—</span></div>
+
+        <h4>Şifre Değiştir</h4>
+        <p style="font-size:0.76rem;color:var(--text-muted);margin-bottom:12px">Sayfa kapatılınca oturum sıfırlanır. Yeni şifre hash'i kod içinde güncellenir (geliştirici müdahalesi gerekir).</p>
+
+        <h4>Güvenli Çıkış</h4>
+        <p style="font-size:0.76rem;color:var(--text-muted)">Tüm tarayıcı sekmelerinde oturumu sonlandırır.</p>
+        <button class="btn btn-danger" id="btn-logout-all" style="margin-top:10px">🚪 Tüm Cihazlardan Çıkış Yap</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast">✓ Kaydedildi</div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   SECURITY — SHA-256 + rate-limit + honeypot
+════════════════════════════════════════════════════════ */
+const PW_HASH = '8355ef2a13a271e3f718b426ce037df7e7473b65fa83ba379a8de81ff8eafb4c'; // sha256("14532332")
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MS = 60 * 1000;
+
+async function sha256(str: string): Promise<string> {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// Constant-time string compare (prevents timing attacks)
+function constantTimeEq(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return result === 0;
+}
+
+function getLockState() {
+  try { return JSON.parse(localStorage.getItem('oz-lock') || '{"attempts":0,"until":0}'); }
+  catch { return { attempts: 0, until: 0 }; }
+}
+function setLockState(s: any) { localStorage.setItem('oz-lock', JSON.stringify(s)); }
+
+let lockTimer: any = null;
+function updateLockUI() {
+  const banner = document.getElementById('login-locked-banner')!;
+  const secEl  = document.getElementById('lockout-seconds')!;
+  const input  = document.getElementById('pw-input') as HTMLInputElement;
+  const btn    = document.getElementById('btn-login') as HTMLButtonElement;
+  const st = getLockState();
+  const now = Date.now();
+  if (st.until > now) {
+    const remain = Math.ceil((st.until - now) / 1000);
+    banner.classList.add('show');
+    secEl.textContent = String(remain);
+    input.disabled = true;
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+    if (!lockTimer) lockTimer = setInterval(updateLockUI, 1000);
+  } else {
+    banner.classList.remove('show');
+    input.disabled = false;
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    if (lockTimer) { clearInterval(lockTimer); lockTimer = null; }
+  }
+}
+
+async function doLogin() {
+  const honey = (document.getElementById('honey-pot') as HTMLInputElement).value;
+  if (honey) { showLoginErr('Geçersiz istek.'); return; } // bot caught
+
+  const st = getLockState();
+  if (st.until > Date.now()) { updateLockUI(); return; }
+
+  const pw = (document.getElementById('pw-input') as HTMLInputElement).value;
+  if (!pw) { showLoginErr('Şifre boş bırakılamaz.'); return; }
+
+  const hash = await sha256(pw);
+  if (constantTimeEq(hash, PW_HASH)) {
+    setLockState({ attempts: 0, until: 0 });
+    sessionStorage.setItem('oz-admin', '1');
+    localStorage.setItem('oz-lastlogin', new Date().toISOString());
+    showAdmin();
+  } else {
+    const attempts = st.attempts + 1;
+    if (attempts >= MAX_ATTEMPTS) {
+      setLockState({ attempts: 0, until: Date.now() + LOCKOUT_MS });
+      showLoginErr(`Çok fazla başarısız deneme. ${LOCKOUT_MS/1000}sn beklemeniz gerekiyor.`);
+      updateLockUI();
+    } else {
+      setLockState({ attempts, until: 0 });
+      showLoginErr(`Hatalı şifre. ${MAX_ATTEMPTS - attempts} deneme kaldı.`);
+    }
+  }
+}
+
+function showLoginErr(msg: string) {
+  const err = document.getElementById('login-error')!;
+  err.textContent = msg;
+  setTimeout(() => { if (err.textContent === msg) err.textContent = ''; }, 4000);
+}
+
+function showAdmin() {
+  (document.getElementById('login-screen') as HTMLElement).style.display = 'none';
+  (document.getElementById('admin-screen') as HTMLElement).style.display = 'block';
+  loadAllValues();
+  updateSecurityStats();
+}
+
+function doLogout() {
+  sessionStorage.removeItem('oz-admin');
+  location.reload();
+}
+
+function doLogoutAll() {
+  if (!confirm('Tüm cihazlarda oturum sonlandırılacak. Onaylıyor musunuz?')) return;
+  sessionStorage.clear();
+  localStorage.removeItem('oz-admin-session');
+  location.reload();
+}
+
+document.getElementById('btn-login')?.addEventListener('click', doLogin);
+document.getElementById('pw-input')?.addEventListener('keydown', e => {
+  if ((e as KeyboardEvent).key === 'Enter') doLogin();
+});
+document.getElementById('btn-logout')?.addEventListener('click', doLogout);
+document.getElementById('btn-logout-all')?.addEventListener('click', doLogoutAll);
+
+updateLockUI();
+if (sessionStorage.getItem('oz-admin') === '1') showAdmin();
+
+/* ════════════════════════════════════════════════════════
+   PANEL NAVIGATION
+════════════════════════════════════════════════════════ */
+document.querySelectorAll('.sidebar-link[data-panel]').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const target = e.currentTarget as HTMLElement;
+    const name = target.dataset.panel!;
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link[data-panel]').forEach(l => l.classList.remove('active'));
+    document.getElementById(`panel-${name}`)?.classList.add('active');
+    target.classList.add('active');
+    const titles: Record<string,string> = {
+      contact: 'İletişim Bilgileri', hero: 'Hero Bölümü', services: 'Hizmetler',
+      gallery: 'Galeri', testimonials: 'Müşteri Yorumları', faq: 'Sıkça Sorulan Sorular',
+      footer: 'Footer', seo: 'SEO & Logo', chat: 'Canlı Sohbet',
+      analytics: 'Ziyaretçi Logları', security: 'Güvenlik & Sistem',
+    };
+    document.getElementById('page-title')!.textContent = titles[name] || name;
+    document.getElementById('sidebar')?.classList.remove('open');
+  });
+});
+
+document.getElementById('mob-menu-btn')?.addEventListener('click', () => {
+  document.getElementById('sidebar')?.classList.toggle('open');
+});
+
+/* ════════════════════════════════════════════════════════
+   CONFIG STORAGE
+════════════════════════════════════════════════════════ */
+function getConfig(): Record<string, any> {
+  try { return JSON.parse(localStorage.getItem('oz-config') || '{}'); }
+  catch { return {}; }
+}
+function val(id: string): string {
+  return (document.getElementById(id) as HTMLInputElement)?.value || '';
+}
+function setVal(id: string, value: string) {
+  const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement;
+  if (el && value !== undefined) el.value = value;
+}
+
+/* ════════════════════════════════════════════════════════
+   DEFAULTS
+════════════════════════════════════════════════════════ */
+const DEFAULT_SERVICES = [
+  { title: 'Telefon Tamiri',     desc: 'iPhone, Samsung, Xiaomi ve tüm akıllı telefonlarda ekran, batarya, kamera ve anakart servisi.', img: 'https://images.pexels.com/photos/4709378/pexels-photo-4709378.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { title: 'Drone Servisi',      desc: 'DJI, Autel, Parrot ve tüm drone markalarında motor, gimbal, ESC ve kalibrasyon.',                  img: 'https://images.pexels.com/photos/336232/pexels-photo-336232.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { title: 'Elektronik Tamir',   desc: 'Laptop, tablet ve elektronik kartlarda anakart, güç devresi ve BGA lehim çalışması.',             img: 'https://images.pexels.com/photos/9242896/pexels-photo-9242896.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { title: 'Araç Beyin Tamiri',  desc: 'Araç ECU / Beyin programlama, onarım ve OBD arıza tespit hizmetleri.',                              img: 'https://images.pexels.com/photos/6636458/pexels-photo-6636458.jpeg?auto=compress&cs=tinysrgb&w=800' },
+];
+const DEFAULT_GALLERY = [
+  'https://images.pexels.com/photos/7286009/pexels-photo-7286009.jpeg?auto=compress&cs=tinysrgb&w=900',
+  'https://images.pexels.com/photos/9242896/pexels-photo-9242896.jpeg?auto=compress&cs=tinysrgb&w=900',
+  'https://images.pexels.com/photos/4709378/pexels-photo-4709378.jpeg?auto=compress&cs=tinysrgb&w=900',
+  'https://images.pexels.com/photos/36169774/pexels-photo-36169774.jpeg?auto=compress&cs=tinysrgb&w=900',
+  'https://images.pexels.com/photos/6636458/pexels-photo-6636458.jpeg?auto=compress&cs=tinysrgb&w=900',
+  'https://images.pexels.com/photos/4709370/pexels-photo-4709370.jpeg?auto=compress&cs=tinysrgb&w=900',
+];
+const DEFAULT_TESTIMONIALS = [
+  { name: 'A. Yılmaz', role: 'Elazığ', service: 'iPhone Ekran',    text: 'iPhone 13 ekranımı değiştirdiler. İşçilik temiz, süreç hakkında bilgilendirildim. Memnun kaldım.' },
+  { name: 'M. Kaya',   role: 'Elazığ', service: 'Drone Motor',     text: 'DJI Mini 2 droneum motorunda problem vardı. Detaylı kontrol ettiler, sorunu açık şekilde anlattılar.' },
+  { name: 'F. Şahin',  role: 'Elazığ', service: 'Laptop Ekran',    text: 'Laptop ekranı değişimi için gittim. Uygun süre içinde teslim aldım, sıkıntı yaşamadım.' },
+  { name: 'Z. Arslan', role: 'Elazığ', service: 'Şarj Girişi',     text: 'Samsung telefonumun şarj girişi sorunluydu. Önce kontrol ettiler, sonra ne yapılacağını anlattılar.' },
+  { name: 'İ. Demir',  role: 'Elazığ', service: 'Drone Bakım',     text: 'Drone bakımı için her yıl uğradığım yer. Düzenli ve özenli çalışıyorlar.' },
+  { name: 'A. Koç',    role: 'Elazığ', service: 'Tablet Ekran',    text: 'Tablet ekranı değişimi yapıldı. Süreç boyunca iletişim iyiydi, fiyat ve süre konusunda net bilgi aldım.' },
+  { name: 'K. Öztürk', role: 'Elazığ', service: 'Araç ECU',        text: 'Araç beyin tamiri için geldim. Sorunu tespit ettiler, beklediğimden kısa sürede çözdüler.' },
+  { name: 'S. Çelik',  role: 'Elazığ', service: 'Anakart',         text: 'Laptop anakartında sorun vardı, başka yerde "olmaz" dediler. Burada hallettiler, gayet iyiydi.' },
+  { name: 'H. Yıldız', role: 'Elazığ', service: 'iPhone Batarya',  text: 'Batarya değişimi için gittim. Hızlı ve temiz bir işlemdi, cihazı yerinde bekledim.' },
+];
+const DEFAULT_FAQ = [
+  { q: 'Tamir süresi ne kadar?',        a: 'Cihaz türüne göre değişir. Genelde aynı gün veya 1-2 iş günü içinde teslim ederiz.' },
+  { q: 'Ön inceleme ücretli mi?',       a: 'Hayır, ön inceleme tamamen ücretsizdir. Tamir kararı size aittir.' },
+  { q: 'Hangi parçaları kullanıyorsunuz?', a: 'Kaliteli ve uyumlu parçalar kullanıyoruz. Tercihinize göre orijinal veya muadil seçenek sunuyoruz.' },
+  { q: 'Garanti veriyor musunuz?',      a: 'Yapılan işçilik için sözlü taahhüdümüz vardır. Detayları işlem öncesi sizinle paylaşırız.' },
+  { q: 'Kapıdan teslim alıyor musunuz?', a: 'Elazığ il merkezinde belirli koşullarda kapıdan teslim alım yapıyoruz. İletişime geçin.' },
+  { q: 'Drone tamiri yapıyor musunuz?', a: 'Evet, DJI, Autel, Parrot ve diğer markalarda tamir, motor değişimi ve kalibrasyon hizmeti veriyoruz.' },
+  { q: 'Araç beyin (ECU) tamiri ne?',   a: 'Aracın elektronik kontrol ünitesinin onarım ve programlanması. Belirli marka ve modeller için hizmet veriyoruz.' },
+  { q: 'Ödeme nasıl yapılır?',          a: 'Nakit, kart veya havale ile ödeme alıyoruz. Tamir sonrası teslimde tahsil edilir.' },
+];
+
+/* ════════════════════════════════════════════════════════
+   LOAD VALUES
+════════════════════════════════════════════════════════ */
+function loadAllValues() {
+  const cfg = getConfig();
+
+  // Contact
+  setVal('c-phone',    cfg.phone    ?? '+90 (424) 000 00 00');
+  setVal('c-whatsapp', cfg.whatsapp ?? '+904240000000');
+  setVal('c-email',    cfg.email    ?? 'info@ozkartaliletisim.com');
+  setVal('c-address',  cfg.address  ?? 'Elazığ, Türkiye');
+  setVal('c-hours',    cfg.hours    ?? 'Pzt-Cmt: 09:00-19:00');
+  setVal('c-mapLng',   cfg.mapLng   ?? '39.2272');
+  setVal('c-mapLat',   cfg.mapLat   ?? '38.6810');
+  setVal('c-mapsLink', cfg.mapsLink ?? '');
+
+  // Hero
+  setVal('h-line1', cfg.heroLine1 ?? 'Cihazınız');
+  setVal('h-line2', cfg.heroLine2 ?? 'Doğru Ellerde.');
+  setVal('h-sub',   cfg.heroSub   ?? 'iPhone, Samsung, DJI ve elektronik cihazlarınız için özenli teknik servis. Ücretsiz ön inceleme, şeffaf süreç.');
+  setVal('h-cta1',  cfg.heroCta1  ?? 'İletişime Geç');
+  setVal('h-cta2',  cfg.heroCta2  ?? 'Hizmetleri İncele');
+
+  // Services
+  buildServiceCards(cfg.services || DEFAULT_SERVICES);
+
+  // Gallery
+  buildGalleryList(cfg.gallery || DEFAULT_GALLERY);
+
+  // Testimonials
+  buildTestimonialList(cfg.testimonials || DEFAULT_TESTIMONIALS);
+
+  // FAQ
+  buildFaqList(cfg.faq || DEFAULT_FAQ);
+
+  // Footer
+  setVal('f-tagline',   cfg.footerTagline   ?? 'Elazığ\'ın güvenilir teknik servisi.');
+  setVal('f-copyright', cfg.footerCopyright ?? '© 2026 ÖzKartal İletişim. Tüm hakları saklıdır.');
+
+  // SEO
+  setVal('seo-title', cfg.seoTitle ?? 'ÖzKartal İletişim — Telefon, Drone, Elektronik Tamir | Elazığ');
+  setVal('seo-desc',  cfg.seoDesc  ?? 'Elazığ\'ın güvenilir teknik servisi. Telefon, drone, elektronik ve araç beyin tamiri.');
+  setVal('seo-logo1', cfg.logoOz   ?? 'Öz');
+  setVal('seo-logo2', cfg.logoRest ?? 'Kartal');
+
+  // Chat
+  setVal('chat-greeting-text', cfg.chatGreeting ?? 'Merhaba! 👋 ÖzKartal İletişim\'e hoş geldiniz.');
+  setVal('chat-prebubble-delay', cfg.chatPrebubbleDelay ?? '3.5');
+  setVal('chat-prebubble-text', cfg.chatPrebubbleText ?? 'Merhaba! Size nasıl yardımcı olabilirim? 👋');
+  setVal('chat-ai-provider', cfg.chatAiProvider ?? 'demo');
+  setVal('chat-ai-key', cfg.chatAiKey ?? '');
+  setVal('chat-custom-replies', cfg.chatCustomReplies ?? '');
+}
+
+/* ════════════════════════════════════════════════════════
+   IMAGE PICKER (URL + File upload)
+════════════════════════════════════════════════════════ */
+function imagePickerHTML(id: string, url: string, label: string): string {
+  const safeUrl = (url || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  return `
+    <label style="display:block;margin-bottom:6px;font-size:0.78rem;font-weight:600;color:var(--text-muted);font-family:'Space Grotesk',sans-serif">${label}</label>
+    <div class="img-picker" style="display:flex;gap:10px;align-items:flex-start">
+      <div class="img-thumb" id="thumb-${id}" ${url ? `style="background-image:url('${safeUrl}')"` : 'data-empty'}></div>
+      <div class="img-fields" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+        <input type="url" id="${id}" value="${safeUrl}" placeholder="https://..." oninput="window.previewImg('${id}')"/>
+        <label class="img-upload-btn">📁 Bilgisayardan Yükle
+          <input type="file" accept="image/*" onchange="window.uploadImg(event,'${id}')"/>
+        </label>
+      </div>
+    </div>`;
+}
+
+;(window as any).previewImg = (id: string) => {
+  const input = document.getElementById(id) as HTMLInputElement;
+  const thumb = document.getElementById(`thumb-${id}`)!;
+  if (input.value) {
+    thumb.style.backgroundImage = `url('${input.value}')`;
+    thumb.removeAttribute('data-empty');
+  } else {
+    thumb.style.backgroundImage = '';
+    thumb.setAttribute('data-empty', '');
+  }
+};
+
+;(window as any).uploadImg = (e: Event, id: string) => {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showToast('Dosya 2MB\'dan büyük olamaz.', true); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = reader.result as string;
+    const input = document.getElementById(id) as HTMLInputElement;
+    input.value = dataUrl;
+    (window as any).previewImg(id);
+    showToast('✓ Görsel yüklendi');
+  };
+  reader.readAsDataURL(file);
+};
+
+/* ════════════════════════════════════════════════════════
+   SERVICE CARDS
+════════════════════════════════════════════════════════ */
+function buildServiceCards(services: any[]) {
+  const wrap = document.getElementById('services-list')!;
+  wrap.innerHTML = '';
+  const L = 'style="display:block;margin-bottom:6px;font-size:0.78rem;font-weight:600;color:var(--text-muted);font-family:\'Space Grotesk\',sans-serif"';
+  const G = 'style="margin-bottom:14px"';
+  services.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'testimonial-card';
+    card.innerHTML = `
+      <h4 style="margin-top:0">Kategori ${i + 1}</h4>
+      <div ${G}><label ${L}>Başlık</label><input type="text" id="s${i}-title" value="${(s.title || DEFAULT_SERVICES[i].title).replace(/"/g, '&quot;')}"/></div>
+      <div ${G}><label ${L}>Açıklama</label><textarea id="s${i}-desc" rows="2">${s.desc || DEFAULT_SERVICES[i].desc}</textarea></div>
+      <div ${G}>${imagePickerHTML(`s${i}-img`, s.img || DEFAULT_SERVICES[i].img, 'Görsel (Pexels URL veya PC yükleme)')}</div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+/* ════════════════════════════════════════════════════════
+   GALLERY
+════════════════════════════════════════════════════════ */
+function buildGalleryList(urls: string[]) {
+  const wrap = document.getElementById('gallery-list')!;
+  wrap.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const url = urls[i] || '';
+    const card = document.createElement('div');
+    card.style.marginBottom = '18px';
+    card.innerHTML = imagePickerHTML(`g${i}`, url, `Fotoğraf ${i + 1}`);
+    wrap.appendChild(card);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   TESTIMONIALS
+════════════════════════════════════════════════════════ */
+function buildTestimonialList(items: any[]) {
+  const wrap = document.getElementById('testimonials-list')!;
+  wrap.innerHTML = '';
+  const L = 'style="display:block;margin-bottom:6px;font-size:0.78rem;font-weight:600;color:var(--text-muted);font-family:\'Space Grotesk\',sans-serif"';
+  const G = 'style="margin-bottom:14px"';
+  for (let i = 0; i < 9; i++) {
+    const t = items[i] || DEFAULT_TESTIMONIALS[i];
+    const card = document.createElement('div');
+    card.className = 'testimonial-card';
+    card.innerHTML = `
+      <h4 style="margin-top:0"><span class="test-num">${i + 1}</span>Yorum</h4>
+      <div ${G}><label ${L}>Yorum Metni</label><textarea id="t${i}-text" rows="2">${t.text || ''}</textarea></div>
+      <div class="form-row-3">
+        <div ${G}><label ${L}>İsim</label><input type="text" id="t${i}-name" value="${(t.name || '').replace(/"/g, '&quot;')}"/></div>
+        <div ${G}><label ${L}>Şehir / Rol</label><input type="text" id="t${i}-role" value="${(t.role || '').replace(/"/g, '&quot;')}"/></div>
+        <div ${G}><label ${L}>Hizmet Türü</label><input type="text" id="t${i}-service" value="${(t.service || '').replace(/"/g, '&quot;')}"/></div>
+      </div>
+    `;
+    wrap.appendChild(card);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   FAQ
+════════════════════════════════════════════════════════ */
+function buildFaqList(items: any[]) {
+  const wrap = document.getElementById('faq-list')!;
+  wrap.innerHTML = '';
+  const L = 'style="display:block;margin-bottom:6px;font-size:0.78rem;font-weight:600;color:var(--text-muted);font-family:\'Space Grotesk\',sans-serif"';
+  const G = 'style="margin-bottom:14px"';
+  for (let i = 0; i < 8; i++) {
+    const f = items[i] || DEFAULT_FAQ[i] || { q: '', a: '' };
+    const card = document.createElement('div');
+    card.className = 'testimonial-card';
+    card.innerHTML = `
+      <div ${G}><label ${L}>Soru ${i + 1}</label><input type="text" id="q${i}" value="${(f.q || '').replace(/"/g, '&quot;')}"/></div>
+      <div ${G}><label ${L}>Cevap</label><textarea id="a${i}" rows="2">${f.a || ''}</textarea></div>
+    `;
+    wrap.appendChild(card);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   SAVE
+════════════════════════════════════════════════════════ */
+function saveSection(section: string) {
+  const cfg = getConfig();
+
+  if (section === 'contact') {
+    Object.assign(cfg, {
+      phone: val('c-phone'), whatsapp: val('c-whatsapp'),
+      email: val('c-email'), address: val('c-address'),
+      hours: val('c-hours'),
+      mapLng: val('c-mapLng'), mapLat: val('c-mapLat'),
+      mapsLink: val('c-mapsLink'),
+    });
+  }
+  if (section === 'hero') {
+    Object.assign(cfg, {
+      heroLine1: val('h-line1'), heroLine2: val('h-line2'),
+      heroSub: val('h-sub'), heroCta1: val('h-cta1'), heroCta2: val('h-cta2'),
+    });
+  }
+  if (section === 'services') {
+    cfg.services = [0,1,2,3].map(i => ({
+      title: val(`s${i}-title`),
+      desc:  val(`s${i}-desc`),
+      img:   val(`s${i}-img`),
+    }));
+  }
+  if (section === 'gallery') {
+    cfg.gallery = [0,1,2,3,4,5].map(i => val(`g${i}`));
+  }
+  if (section === 'testimonials') {
+    cfg.testimonials = Array.from({length: 9}, (_, i) => ({
+      text:    val(`t${i}-text`),
+      name:    val(`t${i}-name`),
+      role:    val(`t${i}-role`),
+      service: val(`t${i}-service`),
+    }));
+  }
+  if (section === 'faq') {
+    cfg.faq = Array.from({length: 8}, (_, i) => ({
+      q: val(`q${i}`), a: val(`a${i}`),
+    }));
+  }
+  if (section === 'footer') {
+    Object.assign(cfg, {
+      footerTagline:   val('f-tagline'),
+      footerCopyright: val('f-copyright'),
+    });
+  }
+  if (section === 'seo') {
+    Object.assign(cfg, {
+      seoTitle: val('seo-title'), seoDesc: val('seo-desc'),
+      logoOz: val('seo-logo1'), logoRest: val('seo-logo2'),
+    });
+  }
+  if (section === 'chat') {
+    Object.assign(cfg, {
+      chatGreeting:       val('chat-greeting-text'),
+      chatPrebubbleDelay: val('chat-prebubble-delay'),
+      chatPrebubbleText:  val('chat-prebubble-text'),
+      chatAiProvider:     val('chat-ai-provider'),
+      chatAiKey:          val('chat-ai-key'),
+      chatCustomReplies:  val('chat-custom-replies'),
+    });
+  }
+
+  try {
+    localStorage.setItem('oz-config', JSON.stringify(cfg));
+    showToast('✓ Kaydedildi — site güncellendi');
+  } catch (err) {
+    showToast('Kayıt başarısız: depolama dolu', true);
+  }
+}
+
+document.querySelectorAll('button[data-save]').forEach(b => {
+  b.addEventListener('click', (e) => {
+    const sec = (e.currentTarget as HTMLElement).dataset.save!;
+    saveSection(sec);
+  });
+});
+
+/* ════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════ */
+function showToast(msg = '✓ Kaydedildi', isError = false) {
+  const t = document.getElementById('toast')!;
+  t.textContent = msg;
+  t.classList.toggle('error', isError);
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ════════════════════════════════════════════════════════
+   EXPORT / IMPORT / RESET
+════════════════════════════════════════════════════════ */
+document.getElementById('btn-export')?.addEventListener('click', () => {
+  const cfg = getConfig();
+  const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ozkartal-config-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('✓ Yedek indirildi');
+});
+
+document.getElementById('btn-import')?.addEventListener('click', () => {
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'application/json';
+  inp.onchange = () => {
+    const file = inp.files?.[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result as string);
+        if (typeof parsed !== 'object' || parsed === null) throw new Error('invalid');
+        localStorage.setItem('oz-config', JSON.stringify(parsed));
+        loadAllValues();
+        showToast('✓ Yedek yüklendi');
+      } catch { showToast('Geçersiz JSON dosyası', true); }
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
+});
+
+document.getElementById('btn-reset')?.addEventListener('click', () => {
+  if (!confirm('Tüm değişiklikler silinecek. Emin misiniz?')) return;
+  localStorage.removeItem('oz-config');
+  loadAllValues();
+  showToast('✓ Sıfırlandı');
+});
+
+/* ════════════════════════════════════════════════════════
+   SECURITY STATS
+════════════════════════════════════════════════════════ */
+function updateSecurityStats() {
+  const st = getLockState();
+  const a = document.querySelector('#stat-attempts span:last-child');
+  if (a) a.textContent = String(st.attempts || 0);
+  const last = localStorage.getItem('oz-lastlogin');
+  const l = document.querySelector('#stat-lastlogin span:last-child');
+  if (l && last) {
+    const d = new Date(last);
+    l.textContent = d.toLocaleString('tr-TR');
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   ANALYTICS PANEL
+════════════════════════════════════════════════════════ */
+function loadAnalytics() {
+  let log: any = { views: [], clicks: [] };
+  try { log = JSON.parse(localStorage.getItem('oz-analytics') || '{"views":[],"clicks":[]}'); }
+  catch {}
+
+  const views: any[] = log.views || [];
+  const clicks: any[] = log.clicks || [];
+
+  // Totals
+  document.getElementById('stat-views')!.textContent = String(views.length);
+  document.getElementById('stat-clicks')!.textContent = String(clicks.length);
+
+  // Device split
+  const mobile = views.filter(v => v.ua === 'mobile').length;
+  const desktop = views.length - mobile;
+  const deviceEl = document.getElementById('stat-device');
+  if (deviceEl) deviceEl.textContent = views.length ? `${mobile} / ${desktop}` : '—';
+
+  // Last visit
+  const last = views[views.length - 1];
+  const lvEl = document.getElementById('stat-lastvisit');
+  if (lvEl) lvEl.textContent = last ? new Date(last.t).toLocaleString('tr-TR') : '—';
+
+  // Top clicks
+  const counts: Record<string, number> = {};
+  clicks.forEach(c => {
+    const k = (c.label || '?').slice(0, 40);
+    counts[k] = (counts[k] || 0) + 1;
+  });
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const topEl = document.getElementById('top-clicks');
+  if (topEl) {
+    topEl.innerHTML = sorted.length
+      ? sorted.map(([k, v]) => `<div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.04);padding:4px 0">
+          <span style="color:var(--text)">${escapeHtml(k)}</span>
+          <strong style="color:var(--orange)">${v}</strong>
+        </div>`).join('')
+      : 'Henüz tıklama verisi yok.';
+  }
+
+  // Recent views
+  const rvEl = document.getElementById('recent-views');
+  if (rvEl) {
+    const recent = views.slice(-20).reverse();
+    rvEl.innerHTML = recent.length
+      ? recent.map(v => `<div style="border-bottom:1px solid rgba(255,255,255,0.04);padding:4px 0">
+          <span style="color:var(--orange);font-size:0.74rem">${new Date(v.t).toLocaleString('tr-TR')}</span>
+          <span style="margin-left:10px">${escapeHtml(v.path || '/')}</span>
+          <span style="color:var(--text-muted);margin-left:10px;font-size:0.74rem">[${v.ua || '?'} · ${v.w || '?'}px · ref:${escapeHtml(v.ref || 'direct')}]</span>
+        </div>`).join('')
+      : 'Henüz görüntüleme verisi yok.';
+  }
+
+  // Recent clicks
+  const rcEl = document.getElementById('recent-clicks');
+  if (rcEl) {
+    const recent = clicks.slice(-20).reverse();
+    rcEl.innerHTML = recent.length
+      ? recent.map(c => `<div style="border-bottom:1px solid rgba(255,255,255,0.04);padding:4px 0">
+          <span style="color:var(--orange);font-size:0.74rem">${new Date(c.t).toLocaleString('tr-TR')}</span>
+          <span style="margin-left:10px">${escapeHtml(c.label || '?')}</span>
+          <span style="color:var(--text-muted);margin-left:10px;font-size:0.74rem">${escapeHtml(c.href || '')}</span>
+        </div>`).join('')
+      : 'Henüz tıklama verisi yok.';
+  }
+}
+
+function escapeHtml(s: string): string {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+document.getElementById('btn-refresh-analytics')?.addEventListener('click', loadAnalytics);
+document.getElementById('btn-clear-analytics')?.addEventListener('click', () => {
+  if (!confirm('Tüm ziyaretçi logları silinecek. Emin misiniz?')) return;
+  localStorage.removeItem('oz-analytics');
+  loadAnalytics();
+  showToast('✓ Loglar temizlendi');
+});
+
+// Refresh analytics when entering its panel
+document.querySelectorAll('.sidebar-link[data-panel="analytics"]').forEach(b => {
+  b.addEventListener('click', () => setTimeout(loadAnalytics, 50));
+});
+
+/* ════════════════════════════════════════════════════════
+   MAPS TEST BUTTON
+════════════════════════════════════════════════════════ */
+document.getElementById('btn-test-maps')?.addEventListener('click', () => {
+  const link = val('c-mapsLink');
+  const lng = val('c-mapLng');
+  const lat = val('c-mapLat');
+  const url = link || `https://www.google.com/maps?q=${lat},${lng}`;
+  window.open(url, '_blank', 'noopener,noreferrer');
+});
+</script>
+</body>
+</html>

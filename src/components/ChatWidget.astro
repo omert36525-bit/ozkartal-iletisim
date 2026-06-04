@@ -1,0 +1,649 @@
+---
+// AI Chat Widget — Demo modu (sınıflandırma tabanlı yanıt)
+// Admin panelinden konum/WhatsApp linki + ekstra cevaplar yönetilebilir
+---
+
+<button class="chat-bubble" id="chat-bubble" aria-label="Canlı Destek" aria-expanded="false">
+  <svg class="chat-icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+  </svg>
+  <svg class="chat-icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+    <path d="M18 6L6 18M6 6l12 12"/>
+  </svg>
+  <span class="chat-badge" aria-hidden="true">1</span>
+</button>
+
+<!-- Floating greeting bubble (right of avatar, slides in once) -->
+<div class="chat-prebubble" id="chat-prebubble" aria-hidden="true">
+  <span>Merhaba! Size nasıl yardımcı olabilirim? 👋</span>
+  <button class="chat-prebubble-close" aria-label="Kapat" id="prebubble-close">×</button>
+</div>
+
+<div class="chat-window" id="chat-window" role="dialog" aria-modal="true" aria-label="Canlı Destek Sohbeti">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="chat-avatar" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 48 48" fill="none">
+          <defs>
+            <linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FF6B35"/>
+              <stop offset="100%" stop-color="#F59E0B"/>
+            </linearGradient>
+          </defs>
+          <rect x="3" y="3" width="42" height="42" rx="11" fill="url(#cg)" fill-opacity="0.18" stroke="url(#cg)" stroke-width="2"/>
+          <path d="M16 32 L24 24 M14 34 a3 3 0 1 1 4 -4 L20 28 L28 20 L26 18 L18 26 a3 3 0 0 1 -4 4 Z" fill="url(#cg)"/>
+          <circle cx="24" cy="24" r="1.5" fill="#FF6B35"/>
+        </svg>
+      </div>
+      <div>
+        <div class="chat-agent-name">ÖzKartal Destek</div>
+        <div class="chat-agent-status">
+          <span class="chat-online-dot" aria-hidden="true"></span>
+          <span>Çevrimiçi · Ortalama 2 dk içinde yanıt</span>
+        </div>
+      </div>
+    </div>
+    <button class="chat-close-btn" id="chat-close" aria-label="Sohbeti kapat">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <div class="chat-messages" id="chat-messages" aria-live="polite" aria-atomic="false">
+    <div class="chat-date-sep"><span>Bugün</span></div>
+    <div class="chat-msg bot" id="chat-greeting">
+      <p>Merhaba! 👋 ÖzKartal İletişim'e hoş geldiniz.</p>
+      <p style="margin-top:6px">Size nasıl yardımcı olabilirim?</p>
+      <div class="chat-quick-btns" id="quick-btns">
+        <button class="quick-btn" data-q="Telefon tamiri">📱 Telefon</button>
+        <button class="quick-btn" data-q="Drone servisi">🚁 Drone</button>
+        <button class="quick-btn" data-q="Araç beyin">🚗 ECU</button>
+        <button class="quick-btn" data-q="Fiyat">💰 Fiyat</button>
+        <button class="quick-btn" data-q="Çalışma saatleri">🕐 Saatler</button>
+        <button class="quick-btn" data-q="Konum">📍 Konum</button>
+        <button class="quick-btn" data-q="WhatsApp">💬 WhatsApp</button>
+        <button class="quick-btn" data-q="Garanti">🛡 Garanti</button>
+      </div>
+    </div>
+  </div>
+
+  <form class="chat-input-row" id="chat-form" autocomplete="off">
+    <input type="text" id="chat-input" class="chat-input" placeholder="Mesajınızı yazın..." maxlength="300" aria-label="Mesaj yaz"/>
+    <button type="submit" class="chat-send" aria-label="Gönder">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+    </button>
+  </form>
+</div>
+
+<style>
+.chat-bubble {
+  position: fixed;
+  right: 24px; bottom: 24px;
+  z-index: 999;
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF6B35 0%, #F59E0B 100%);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 12px 32px rgba(255,107,53,0.5), 0 4px 12px rgba(0,0,0,0.4);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
+  color: #fff;
+}
+.chat-bubble::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,107,53,0.4);
+  animation: bubble-ring 2.5s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes bubble-ring {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.chat-bubble:hover { transform: scale(1.1); box-shadow: 0 16px 40px rgba(255,107,53,0.65); }
+.chat-bubble.open .chat-icon-open,
+.chat-bubble.open::before { display: none; }
+.chat-bubble:not(.open) .chat-icon-close { display: none; }
+
+.chat-badge {
+  position: absolute;
+  top: -2px; right: -2px;
+  width: 22px; height: 22px;
+  background: #ef4444;
+  border-radius: 50%;
+  font-size: 0.7rem; font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  border: 2px solid #06060c;
+  animation: badge-pulse 2.5s ease-in-out infinite;
+}
+.chat-bubble.open .chat-badge { display: none; }
+@keyframes badge-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+
+/* PREBUBBLE (auto-greeting outside chat) */
+.chat-prebubble {
+  position: fixed;
+  right: 92px; bottom: 38px;
+  z-index: 998;
+  background: #ffffff;
+  color: #111;
+  padding: 12px 38px 12px 16px;
+  border-radius: 16px;
+  font-size: 0.88rem;
+  font-family: 'DM Sans', sans-serif;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,107,53,0.2);
+  opacity: 0; transform: translateX(20px) scale(0.92);
+  transition: opacity 0.4s, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events: none;
+  max-width: 250px;
+}
+.chat-prebubble::after {
+  content: '';
+  position: absolute;
+  right: -8px; top: 50%;
+  transform: translateY(-50%);
+  border: 8px solid transparent;
+  border-left-color: #ffffff;
+}
+.chat-prebubble.show { opacity: 1; transform: none; pointer-events: all; }
+.chat-prebubble-close {
+  position: absolute; right: 6px; top: 6px;
+  width: 22px; height: 22px;
+  background: rgba(0,0,0,0.06); border: none; border-radius: 50%;
+  cursor: pointer; font-size: 1.1rem; line-height: 1;
+  color: #555;
+  display: flex; align-items: center; justify-content: center;
+}
+.chat-prebubble-close:hover { background: rgba(0,0,0,0.12); }
+
+/* WINDOW */
+.chat-window {
+  position: fixed;
+  right: 24px; bottom: 96px;
+  z-index: 998;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  max-height: 560px;
+  background: #0f0f1c;
+  border: 1px solid rgba(255,107,53,0.22);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,107,53,0.08) inset;
+  transform: translateY(20px) scale(0.96);
+  opacity: 0; pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
+  overflow: hidden;
+}
+.chat-window.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
+
+.chat-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(255,107,53,0.18) 0%, rgba(245,158,11,0.1) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.chat-header-info { display: flex; align-items: center; gap: 10px; }
+.chat-avatar {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(255,107,53,0.15);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255,107,53,0.3);
+}
+.chat-agent-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.92rem; font-weight: 700;
+  color: #F4F4F5;
+}
+.chat-agent-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.7rem; color: rgba(34,197,94,0.95);
+}
+.chat-online-dot {
+  width: 7px; height: 7px;
+  background: #22c55e; border-radius: 50%;
+  box-shadow: 0 0 8px #22c55e;
+  animation: dot-pulse 2s ease-in-out infinite;
+}
+@keyframes dot-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.chat-close-btn {
+  background: none; border: none; color: rgba(255,255,255,0.55);
+  cursor: pointer; padding: 6px; border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+.chat-close-btn:hover { background: rgba(255,255,255,0.07); color: #fff; }
+
+.chat-messages {
+  flex: 1; overflow-y: auto;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  scroll-behavior: smooth;
+}
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(255,107,53,0.25); border-radius: 4px; }
+
+.chat-date-sep {
+  text-align: center;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.32);
+  font-family: 'Space Grotesk', sans-serif;
+  display: flex; align-items: center; gap: 8px;
+}
+.chat-date-sep::before, .chat-date-sep::after {
+  content: ''; flex: 1; height: 1px;
+  background: rgba(255,255,255,0.08);
+}
+
+.chat-msg {
+  max-width: 88%;
+  padding: 11px 14px;
+  border-radius: 14px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  animation: msg-in 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  word-wrap: break-word;
+}
+@keyframes msg-in {
+  from { transform: translateY(10px) scale(0.95); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.chat-msg.bot {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #e8e8f0;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+.chat-msg.user {
+  background: linear-gradient(135deg, #FF6B35, #F59E0B);
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+  font-weight: 500;
+}
+.chat-msg.typing {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  align-self: flex-start;
+  padding: 13px 17px;
+}
+.chat-typing-dots { display: flex; gap: 5px; align-items: center; }
+.chat-typing-dots span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(255,107,53,0.75);
+  animation: typing 1.2s ease-in-out infinite;
+}
+.chat-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.chat-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-7px)} }
+
+/* Bot action buttons (e.g. "WhatsApp'a Yaz", "Konumu Aç") */
+.chat-action-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #FF6B35, #F59E0B);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.78rem; font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+  border-radius: 10px;
+  border: none; cursor: pointer;
+  box-shadow: 0 6px 16px rgba(255,107,53,0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.chat-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(255,107,53,0.5);
+}
+.chat-action-btn.whatsapp {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  box-shadow: 0 6px 16px rgba(37,211,102,0.35);
+}
+.chat-action-btn.whatsapp:hover { box-shadow: 0 10px 24px rgba(37,211,102,0.55); }
+
+.chat-quick-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.quick-btn {
+  padding: 6px 11px;
+  background: rgba(255,107,53,0.1);
+  border: 1px solid rgba(255,107,53,0.28);
+  color: rgba(255,107,53,0.95);
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+.quick-btn:hover {
+  background: rgba(255,107,53,0.2);
+  border-color: rgba(255,107,53,0.55);
+  transform: translateY(-1px);
+}
+
+.chat-input-row {
+  display: flex; gap: 8px; align-items: center;
+  padding: 12px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.02);
+  flex-shrink: 0;
+}
+.chat-input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-family: 'DM Sans', sans-serif;
+  color: #F4F4F5;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.chat-input:focus { border-color: rgba(255,107,53,0.5); background: rgba(255,255,255,0.08); }
+.chat-input::placeholder { color: rgba(255,255,255,0.35); }
+.chat-send {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, #FF6B35, #F59E0B);
+  border: none; border-radius: 10px;
+  color: #fff; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 6px 16px rgba(255,107,53,0.4);
+}
+.chat-send:hover { transform: scale(1.06); box-shadow: 0 10px 24px rgba(255,107,53,0.55); }
+.chat-send:active { transform: scale(0.96); }
+
+@media (max-width: 420px) {
+  .chat-window { right: 12px; bottom: 84px; width: calc(100vw - 24px); }
+  .chat-bubble { right: 16px; bottom: 16px; }
+  .chat-prebubble { right: 82px; bottom: 32px; max-width: 200px; font-size: 0.82rem; }
+}
+</style>
+
+<script>
+/* ─── ADMIN CONFIG ─── */
+function getCfg() {
+  try { return JSON.parse(localStorage.getItem('oz-config') || '{}'); }
+  catch { return {}; }
+}
+
+/* Parse admin's custom replies: "anahtar | yanıt" satır satır */
+function parseCustomReplies(text) {
+  if (!text) return [];
+  return text.split('\n')
+    .map(line => line.trim())
+    .filter(line => line && line.includes('|'))
+    .map(line => {
+      const [key, ...rest] = line.split('|');
+      return { key: key.trim().toLowerCase(), value: rest.join('|').trim() };
+    });
+}
+
+function checkCustomReply(text, customReplies) {
+  const m = text.toLowerCase();
+  for (const r of customReplies) {
+    if (m.includes(r.key)) return r.value;
+  }
+  return null;
+}
+
+/* ─── INTENT CLASSIFIER ─── */
+function classify(text) {
+  const m = text.toLowerCase().trim();
+  // Pattern matching with priority
+  if (/(merhaba|selam|iyi (akşamlar|günler|sabahlar)|hey|hi|hello)/.test(m)) return 'merhaba';
+  if (/(teşekk|sağ ?ol|tşk|thanks|tamam|anladım|peki|ok)/.test(m)) return 'tesekkur';
+
+  if (/(konum|adres|nerede|nerden|yer|lokasyon|harita|map|gel(em|mek)|nasıl gele)/.test(m)) return 'konum';
+  if (/(whatsapp|whats ?app|wp|wa\.me)/.test(m)) return 'whatsapp';
+  if (/(saat|açık|kapalı|çalışma|mesai|pazar|hafta sonu|ne zaman)/.test(m)) return 'saat';
+
+  if (/(garanti|güvence|teminat)/.test(m)) return 'garanti';
+  if (/(ödeme|nakit|kart|havale|taksit|fatura)/.test(m)) return 'odeme';
+  if (/(orijinal|sahte|kalite|parça|yedek)/.test(m)) return 'parca';
+  if (/(süre|kaç gün|ne kadar sür|hızlı|aynı gün)/.test(m)) return 'sure';
+  if (/(veri|fotoğraf|kişisel|yedek|backup|silinir)/.test(m)) return 'veri';
+  if (/(kargo|gönder|göndere|şehir dışı|posta)/.test(m)) return 'kargo';
+  if (/(nasıl yap|nasıl tamir|hangi yöntem|teknik detay|hangi cihaz|hangi alet|nasıl onar)/.test(m)) return 'teknik_detay';
+
+  if (/(fiyat|ücret|para|kaç tl|ne kadar|kaç para|maliyet)/.test(m)) return 'fiyat';
+
+  if (/(telefon|iphone|samsung|xiaomi|huawei|oppo|ekran|batarya|şarj|kamera|hoparlör|face ?id|tuş)/.test(m)) return 'telefon';
+  if (/(drone|dji|mavic|mini|air|parrot|autel|gimbal|pervane|kumanda|esc)/.test(m)) return 'drone';
+  if (/(ecu|beyin|araç|araba|oto|abs|airbag|şanzıman|klima beyni|obd|anahtar kodla)/.test(m)) return 'ecu';
+  if (/(laptop|tablet|elektronik|anakart|lehim|bga|devre)/.test(m)) return 'elektronik';
+
+  return 'default';
+}
+
+/* ─── REPLY BUILDERS ─── */
+function reply(intent) {
+  const cfg = getCfg();
+  const phone = cfg.phone || '+90 424 000 00 00';
+  const wa = (cfg.whatsapp || '+904240000000').replace(/[^\d]/g, '');
+  const waUrl = 'https://wa.me/' + wa;
+  const mapsLink = cfg.mapsLink || `https://www.google.com/maps?q=${cfg.mapLat || 38.6810},${cfg.mapLng || 39.2272}`;
+  const addr = cfg.address || 'Elazığ il merkezi';
+  const hours = cfg.hours || 'Pazartesi-Cumartesi 09:00-19:00';
+
+  switch (intent) {
+    case 'merhaba':
+      return { text: 'Merhaba! 👋 Size nasıl yardımcı olabilirim? Telefon, drone, elektronik veya araç beyin tamiri konularında destek verebilirim.' };
+
+    case 'tesekkur':
+      return { text: 'Rica ederiz! 🙏 Başka sorunuz olursa buradayım. İyi günler dileriz.' };
+
+    case 'konum':
+      return {
+        text: `📍 Adresimiz: ${addr}\n\nKonumumuzu Google Maps üzerinde açabilirsiniz.`,
+        actions: [{ label: '🗺 Konumu Aç', href: mapsLink, target: '_blank' }],
+      };
+
+    case 'whatsapp':
+      return {
+        text: 'WhatsApp üzerinden bize ulaşabilirsiniz. Mesajınıza en kısa sürede dönüş yapıyoruz. 📲',
+        actions: [{ label: 'WhatsApp\'tan Yaz', href: waUrl, target: '_blank', className: 'whatsapp' }],
+      };
+
+    case 'saat':
+      return { text: `🕘 Çalışma saatlerimiz:\n${hours}\nPazar günleri kapalıyız.\n\nMesai dışı için WhatsApp'tan mesaj bırakabilirsiniz.` };
+
+    case 'garanti':
+      return { text: '🛡 Yapılan işçilik için sözlü taahhüdümüz vardır. Detayları işlem öncesi sizinle paylaşırız.\n\nKullanılan parçaya göre garanti süresi değişir; ön inceleme sonrası net bilgi veriyoruz.' };
+
+    case 'odeme':
+      return { text: '💳 Ödeme seçenekleri:\n\n• Nakit\n• Kredi/banka kartı\n• Havale / EFT\n\nÖdeme, tamir sonrası teslimde alınır.' };
+
+    case 'parca':
+      return { text: '🔩 Parça politikamız:\n\n• Öncelik orijinal parçadır\n• Orijinal bulunamazsa yüksek kaliteli muadil önerilir\n• Karar her zaman size aittir, onayınız olmadan işlem başlamaz' };
+
+    case 'sure':
+      return { text: '⏱ Süreler:\n\n• Çoğu standart işlem aynı gün veya ertesi gün\n• Mikro lehim / anakart işleri 2-5 gün\n• Cihazınıza özel süre, ön inceleme sonrası bildirilir' };
+
+    case 'veri':
+      return { text: '🔒 Verileriniz güvende. Cihazınızdaki kişisel verilere müdahale edilmez. Yine de önemli verileriniz için tamir öncesi yedek almanızı öneririz.' };
+
+    case 'kargo':
+      return { text: '📦 Şehir dışından kargo ile cihazınızı gönderebilirsiniz. Tamir sonrası güvenli paketleme ile geri gönderilir.\n\nKargo öncesi WhatsApp\'tan bize ulaşırsanız süreç hakkında bilgi verebiliriz.' };
+
+    case 'teknik_detay':
+      return { text: 'Teknik detaylar ve yöntemler cihazınıza özel değerlendirilir. Detaylı bilgi için cihazınızı atölyeye getirip ücretsiz ön inceleme yaptırabilirsiniz.\n\nGenel konularda WhatsApp veya telefon üzerinden destek veriyoruz.' };
+
+    case 'fiyat':
+      return { text: '💰 Fiyatlandırma:\n\nFiyatlar cihazın durumuna göre belirlenir. Önce ücretsiz ön inceleme yapıyoruz, sonra net fiyat ve süre bildiriyoruz.\n\nSürpriz fatura yok, şeffaf süreç. Telefonda kesin fiyat veremiyoruz.' };
+
+    case 'telefon':
+      return { text: '📱 Telefon tamiri kapsamımız:\n\n• iPhone (tüm modeller)\n• Samsung Galaxy serisi\n• Xiaomi, Huawei, OnePlus, Oppo\n• Ekran, batarya, kamera, anakart\n• Sıvı teması, şarj girişi\n• Face ID, hoparlör, mikrofon\n\nÜcretsiz ön inceleme için bize gelebilir veya WhatsApp\'tan fotoğraf gönderebilirsiniz.' };
+
+    case 'drone':
+      return { text: '🚁 Drone servisi:\n\n• DJI Mini, Air, Mavic serileri\n• Autel, Parrot ve diğer markalar\n• Motor & ESC onarımı\n• Gimbal & kamera\n• Kalibrasyon, GPS\n• Gövde tamiri\n\nDrone\'unuzu getirin, ücretsiz inceleyelim.' };
+
+    case 'ecu':
+      return { text: '🚗 Araç beyin (ECU) hizmetlerimiz:\n\n• ECU programlama & onarımı\n• ABS / Airbag modülü\n• Şanzıman beyni, klima beyni\n• BSI / BCM\n• OBD arıza tespit\n• Anahtar kodlama\n\nÇoğu marka/model için hizmet veriyoruz. Araç marka ve modelinizi paylaşırsanız daha net bilgi verebiliriz.' };
+
+    case 'elektronik':
+      return { text: '🔧 Elektronik tamir:\n\n• Laptop & tablet anakart\n• Mikro lehim, BGA lehim\n• Güç devresi onarımı\n• Devre kartı tamiri\n• Oyun konsolu\n• Grafik kartı\n\nDetay için cihazı atölyeye getirebilirsiniz.' };
+
+    default:
+      return {
+        text: 'Sorunuz için teşekkürler. Bu konuda size daha iyi yardımcı olabilmem için doğrudan ekibimize ulaşmanız daha hızlı olur.',
+        actions: [
+          { label: 'WhatsApp\'tan Yaz', href: waUrl, target: '_blank', className: 'whatsapp' },
+          { label: `📞 ${phone}`, href: 'tel:' + phone.replace(/\s/g, ''), target: '_self' },
+        ],
+      };
+  }
+}
+
+/* ─── DOM ─── */
+const bubble = document.getElementById('chat-bubble');
+const win = document.getElementById('chat-window');
+const closeBtn = document.getElementById('chat-close');
+const msgBox = document.getElementById('chat-messages');
+const form = document.getElementById('chat-form');
+const input = document.getElementById('chat-input');
+const prebubble = document.getElementById('chat-prebubble');
+const prebubbleClose = document.getElementById('prebubble-close');
+
+function openChat() {
+  bubble.classList.add('open');
+  bubble.setAttribute('aria-expanded', 'true');
+  win.classList.add('open');
+  prebubble.classList.remove('show');
+  setTimeout(() => input.focus(), 300);
+  sessionStorage.setItem('chat-opened', '1');
+}
+function closeChat() {
+  bubble.classList.remove('open');
+  bubble.setAttribute('aria-expanded', 'false');
+  win.classList.remove('open');
+}
+
+bubble.addEventListener('click', () => {
+  bubble.classList.contains('open') ? closeChat() : openChat();
+});
+closeBtn.addEventListener('click', closeChat);
+prebubbleClose.addEventListener('click', (e) => {
+  e.stopPropagation();
+  prebubble.classList.remove('show');
+  sessionStorage.setItem('prebubble-dismissed', '1');
+});
+prebubble.addEventListener('click', (e) => {
+  if (e.target === prebubbleClose) return;
+  openChat();
+});
+
+// Quick reply buttons
+document.querySelectorAll('.quick-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const q = btn.dataset.q || '';
+    const qc = document.getElementById('quick-btns');
+    if (qc) qc.style.display = 'none';
+    addUserMsg(q);
+    handleBotReply(q);
+  });
+});
+
+function addUserMsg(text) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg user';
+  div.textContent = text;
+  msgBox.appendChild(div);
+  msgBox.scrollTop = msgBox.scrollHeight;
+}
+
+function addBotMsg(reply) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot';
+
+  // Convert newlines safely
+  const lines = (reply.text || '').split('\n');
+  lines.forEach((line, i) => {
+    if (i > 0) div.appendChild(document.createElement('br'));
+    div.appendChild(document.createTextNode(line));
+  });
+
+  if (Array.isArray(reply.actions)) {
+    const wrap = document.createElement('div');
+    wrap.style.marginTop = '8px';
+    wrap.style.display = 'flex';
+    wrap.style.flexWrap = 'wrap';
+    wrap.style.gap = '6px';
+    reply.actions.forEach(a => {
+      const link = document.createElement('a');
+      link.className = 'chat-action-btn' + (a.className ? ' ' + a.className : '');
+      link.textContent = a.label;
+      link.href = a.href;
+      link.target = a.target || '_blank';
+      link.rel = 'noopener noreferrer';
+      wrap.appendChild(link);
+    });
+    div.appendChild(wrap);
+  }
+
+  msgBox.appendChild(div);
+  msgBox.scrollTop = msgBox.scrollHeight;
+}
+
+function showTyping() {
+  return new Promise(resolve => {
+    const div = document.createElement('div');
+    div.className = 'chat-msg typing';
+    div.innerHTML = '<div class="chat-typing-dots"><span></span><span></span><span></span></div>';
+    msgBox.appendChild(div);
+    msgBox.scrollTop = msgBox.scrollHeight;
+    const delay = 700 + Math.random() * 500;
+    setTimeout(() => { div.remove(); resolve(); }, delay);
+  });
+}
+
+async function handleBotReply(userText) {
+  await showTyping();
+  const cfg = getCfg();
+  // Check admin's custom replies first
+  const customReplies = parseCustomReplies(cfg.chatCustomReplies);
+  const customMatch = checkCustomReply(userText, customReplies);
+  if (customMatch) {
+    addBotMsg({ text: customMatch });
+    return;
+  }
+  const r = reply(classify(userText));
+  addBotMsg(r);
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addUserMsg(msg);
+  await handleBotReply(msg);
+});
+
+/* ─── AUTO PREBUBBLE GREETING ─── */
+function maybeShowPrebubble() {
+  if (sessionStorage.getItem('chat-opened')) return;
+  if (sessionStorage.getItem('prebubble-dismissed')) return;
+  if (window.innerWidth < 480) return;
+  const cfg = getCfg();
+  const delay = (parseFloat(cfg.chatPrebubbleDelay) || 3.5) * 1000;
+  const text = cfg.chatPrebubbleText || 'Merhaba! Size nasıl yardımcı olabilirim? 👋';
+  // Update prebubble text from admin config
+  const span = prebubble.querySelector('span');
+  if (span) span.textContent = text;
+  setTimeout(() => {
+    if (!bubble.classList.contains('open')) {
+      prebubble.classList.add('show');
+      setTimeout(() => prebubble.classList.remove('show'), 12000);
+    }
+  }, delay);
+}
+maybeShowPrebubble();
+</script>

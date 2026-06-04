@@ -1,0 +1,241 @@
+---
+// Tüm sayfa boyunca görünen turuncu/amber radial glow + animated ribbon shapes
+// Hero'daki gibi atmosferik arka plan — scroll'da fixed kalır
+---
+<div class="shape-bg" aria-hidden="true">
+  <!-- Layer 1: Soft radial gradient base (Hero's robot-glow feel) -->
+  <div class="bg-radial-1"></div>
+  <div class="bg-radial-2"></div>
+  <div class="bg-radial-3"></div>
+
+  <!-- Layer 2: Animated elliptical ribbons -->
+  <div class="elegant-shape shape-1"></div>
+  <div class="elegant-shape shape-2"></div>
+  <div class="elegant-shape shape-3"></div>
+  <div class="elegant-shape shape-4"></div>
+  <div class="elegant-shape shape-5"></div>
+
+  <!-- Layer 3: SVG noise grain -->
+  <svg class="shape-noise" xmlns="http://www.w3.org/2000/svg">
+    <filter id="noiseFilter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.15 0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
+  </svg>
+</div>
+
+<style is:global>
+.shape-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background: #06060c;
+}
+
+/* ─── RADIAL GLOWS (the Hero atmospheric feel) ─── */
+.bg-radial-1, .bg-radial-2, .bg-radial-3 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+}
+.bg-radial-1 {
+  width: 80vw; height: 80vh;
+  top: -20vh; right: -20vw;
+  background: radial-gradient(circle, rgba(255,107,53,0.18) 0%, transparent 65%);
+  animation: drift-1 22s ease-in-out infinite;
+}
+.bg-radial-2 {
+  width: 60vw; height: 60vh;
+  bottom: -10vh; right: -10vw;
+  background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%);
+  animation: drift-2 28s ease-in-out infinite;
+}
+.bg-radial-3 {
+  width: 45vw; height: 45vh;
+  top: 30vh; right: 25vw;
+  background: radial-gradient(circle, rgba(255,140,66,0.08) 0%, transparent 70%);
+  animation: drift-3 35s ease-in-out infinite;
+}
+
+@keyframes drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-30px, 20px) scale(1.06); }
+}
+@keyframes drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(40px, -30px) scale(1.08); }
+}
+@keyframes drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(-25px, 15px) scale(0.95); }
+  66%      { transform: translate(20px, -20px) scale(1.05); }
+}
+
+/* ─── RIBBON SHAPES ─── */
+.elegant-shape {
+  position: absolute;
+  border-radius: 9999px;
+  backdrop-filter: blur(1px);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 40px 0 rgba(255,107,53,0.06);
+  opacity: 0;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.23, 0.86, 0.39, 0.96);
+}
+.elegant-shape::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 70%);
+}
+
+.shape-1 {
+  right: -8%; top: 18%;
+  width: 580px; height: 130px;
+  background: linear-gradient(to left, rgba(255,107,53,0.16) 0%, transparent 70%);
+  animation: sf1 16s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+.shape-2 {
+  right: -4%; top: 68%;
+  width: 460px; height: 110px;
+  background: linear-gradient(to left, rgba(245,158,11,0.14) 0%, transparent 70%);
+  animation: sf2 19s ease-in-out infinite;
+  animation-delay: -4s;
+}
+.shape-3 {
+  right: 12%; bottom: 8%;
+  width: 290px; height: 75px;
+  background: linear-gradient(to left, rgba(255,140,66,0.13) 0%, transparent 70%);
+  animation: sf3 14s ease-in-out infinite;
+  animation-delay: -7s;
+}
+.shape-4 {
+  right: 22%; top: 8%;
+  width: 200px; height: 60px;
+  background: linear-gradient(to left, rgba(255,107,53,0.18) 0%, transparent 70%);
+  animation: sf4 20s ease-in-out infinite;
+  animation-delay: -11s;
+}
+.shape-5 {
+  right: 35%; top: 45%;
+  width: 240px; height: 70px;
+  background: linear-gradient(to left, rgba(255,107,53,0.10) 0%, transparent 70%);
+  animation: sf5 24s ease-in-out infinite;
+  animation-delay: -13s;
+}
+
+@keyframes sf1 {
+  0%   { opacity:0; transform: translate(60px,-80px) rotate(9deg); }
+  15%  { opacity:0.85; }
+  50%  { transform: translate(0, 22px) rotate(12deg); opacity:0.75; }
+  100% { transform: translate(0, 0) rotate(12deg); opacity:0.85; }
+}
+@keyframes sf2 {
+  0%   { opacity:0; transform: translate(50px,-80px) rotate(-18deg); }
+  15%  { opacity:0.8; }
+  50%  { transform: translate(0, 18px) rotate(-15deg); opacity:0.7; }
+  100% { transform: translate(0, 0) rotate(-15deg); opacity:0.8; }
+}
+@keyframes sf3 {
+  0%   { opacity:0; transform: translate(40px,-80px) rotate(-6deg); }
+  15%  { opacity:0.75; }
+  50%  { transform: translate(0, 14px) rotate(-8deg); opacity:0.65; }
+  100% { transform: translate(0, 0) rotate(-8deg); opacity:0.75; }
+}
+@keyframes sf4 {
+  0%   { opacity:0; transform: translate(30px,-80px) rotate(16deg); }
+  15%  { opacity:0.8; }
+  50%  { transform: translate(0, 16px) rotate(20deg); opacity:0.7; }
+  100% { transform: translate(0, 0) rotate(20deg); opacity:0.8; }
+}
+@keyframes sf5 {
+  0%   { opacity:0; transform: translate(30px,40px) rotate(-2deg); }
+  20%  { opacity:0.7; }
+  50%  { transform: translate(-15px, 0) rotate(0deg); opacity:0.55; }
+  100% { transform: translate(0, 0) rotate(-2deg); opacity:0.7; }
+}
+
+/* ─── NOISE GRAIN ─── */
+.shape-noise {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* ─── SECTION OVERLAY — LIGHTER ─── */
+/* Hero stays opaque (its own atmosphere) — other sections semi-transparent so glow shows through */
+main > section {
+  position: relative;
+  isolation: isolate;
+}
+main > section:not(.hero) {
+  background: linear-gradient(180deg,
+    rgba(6,6,12,0.78) 0%,
+    rgba(6,6,12,0.72) 50%,
+    rgba(6,6,12,0.78) 100%
+  ) !important;
+}
+
+/* Smooth fade-mask between sections (no hard edges) */
+main > section:not(.hero)::before,
+main > section:not(.hero)::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 120px;
+  pointer-events: none;
+  z-index: 0;
+}
+main > section:not(.hero)::before {
+  top: -1px;
+  background: linear-gradient(180deg,
+    rgba(6,6,12,0.88) 0%,
+    transparent 100%
+  );
+}
+main > section:not(.hero)::after {
+  bottom: -1px;
+  background: linear-gradient(0deg,
+    rgba(6,6,12,0.88) 0%,
+    transparent 100%
+  );
+}
+
+/* Content above pseudo elements */
+main > section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero keeps its own background */
+main > .hero, .hero {
+  background: transparent !important;
+}
+
+/* Override individual section bg-colors that would block the glow */
+.services-section,
+.how-section,
+.stats-section,
+.gallery-section,
+.drone-section,
+.testimonials-section,
+.pricing-section,
+.faq-section,
+.contact-section,
+.footer {
+  background: transparent !important;
+}
+
+/* Footer dark plate */
+.footer {
+  background: linear-gradient(180deg, rgba(6,6,12,0.82) 0%, rgba(6,6,12,0.95) 100%) !important;
+}
+</style>

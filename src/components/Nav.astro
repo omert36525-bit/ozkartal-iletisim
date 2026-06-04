@@ -1,0 +1,187 @@
+---
+import Logo from './Logo.astro';
+const links = [
+  { href: '#hizmetler',     label: 'Hizmetler' },
+  { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
+  { href: '#galeri',        label: 'Galeri' },
+  { href: '#hizmetler-detay', label: 'Hizmet Detayı' },
+  { href: '#iletisim',      label: 'İletişim' },
+];
+---
+
+<header id="navbar" class="nav-header">
+  <div class="container nav-inner">
+    <Logo size={32} />
+
+    <nav class="nav-links" aria-label="Ana navigasyon">
+      {links.map(l => (
+        <a href={l.href} class="nav-link">{l.label}</a>
+      ))}
+    </nav>
+
+    <div class="nav-actions">
+      <a href="#iletisim" class="btn-primary nav-cta">İletişime Geç</a>
+      <button id="menu-toggle" class="hamburger" aria-label="Menü" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Mobil menü">
+    <nav class="mobile-nav">
+      {links.map(l => (
+        <a href={l.href} class="mobile-link">{l.label}</a>
+      ))}
+      <a href="#iletisim" class="btn-primary" style="margin-top:8px;justify-content:center">
+        İletişime Geç
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+.nav-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 18px 0;
+  transition: background 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.4s ease, padding 0.4s ease;
+}
+.nav-header.scrolled {
+  background: rgba(10,10,18,0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+  padding: 12px 0;
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.nav-logo-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #F4F4F5;
+  letter-spacing: -0.02em;
+}
+.nav-logo-oz { color: #FF6B35; }
+
+.nav-links {
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+@media (min-width: 900px) { .nav-links { display: flex; } }
+
+.nav-link {
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(244,244,245,0.7);
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+  text-decoration: none;
+}
+.nav-link:hover {
+  color: #F4F4F5;
+  background: rgba(255,255,255,0.05);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-cta {
+  display: none;
+  padding: 10px 20px;
+  font-size: 0.85rem;
+}
+@media (min-width: 640px) { .nav-cta { display: inline-flex; } }
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.hamburger:hover { background: rgba(255,255,255,0.06); }
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #F4F4F5;
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (min-width: 900px) { .hamburger { display: none; } }
+
+.mobile-menu {
+  display: none;
+  padding: 12px 24px 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(10,10,18,0.95);
+  backdrop-filter: blur(20px);
+}
+.mobile-menu.open { display: block; }
+
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mobile-link {
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(244,244,245,0.8);
+  border-radius: 10px;
+  transition: background 0.2s, color 0.2s;
+}
+.mobile-link:hover { background: rgba(255,255,255,0.05); color: #F4F4F5; }
+</style>
+
+<script>
+  const navbar  = document.getElementById('navbar');
+  const toggle  = document.getElementById('menu-toggle');
+  const mobileM = document.getElementById('mobile-menu');
+
+  window.addEventListener('scroll', () => {
+    navbar?.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  toggle?.addEventListener('click', () => {
+    const open = toggle.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+    mobileM?.classList.toggle('open', open);
+  });
+
+  mobileM?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      toggle?.classList.remove('open');
+      toggle?.setAttribute('aria-expanded', 'false');
+      mobileM.classList.remove('open');
+    });
+  });
+</script>

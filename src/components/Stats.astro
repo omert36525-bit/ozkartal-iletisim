@@ -1,0 +1,134 @@
+---
+const stats = [
+  { value: 10, suffix: '+ Yıl',   label: 'Sektör Deneyimi',      desc: 'Elazığ\'da uzun yıllar' },
+  { value: 30, suffix: '+',       label: 'Tamir Türü',           desc: 'Farklı cihaz ve sorun' },
+  { value: 24, suffix: 'sa',      label: 'Hızlı İletişim',       desc: 'Mesajınıza dönüş' },
+  { value: 100, suffix: '%',      label: 'Şeffaf Süreç',         desc: 'Her aşamada bilgi' },
+];
+---
+
+<section class="stats-section" aria-label="İstatistikler">
+  <div class="container">
+    <div class="stats-grid">
+      {stats.map((s, i) => (
+        <div class={`stat-item reveal reveal-d${i+1}`}>
+          <div
+            class="stat-value"
+            data-target={s.value}
+            data-suffix={s.suffix}
+            aria-label={`${s.value}${s.suffix} ${s.label}`}
+          >
+            <span class="stat-number">0</span><span class="stat-suffix">{s.suffix}</span>
+          </div>
+          <div class="stat-label">{s.label}</div>
+          <div class="stat-desc">{s.desc}</div>
+          <div class="stat-line" aria-hidden="true"></div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.stats-section {
+  padding: 90px 0;
+  background: linear-gradient(180deg, #0A0A12 0%, #08080f 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 22px;
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.stat-item {
+  background: rgba(10,10,18,0.98);
+  padding: 36px 24px 32px;
+  text-align: center;
+  position: relative;
+  transition: background 0.3s;
+}
+.stat-item:hover { background: rgba(20,20,32,0.98); }
+
+.stat-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+.stat-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #FF6B35, #F59E0B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-suffix {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 600;
+  color: #FF6B35;
+}
+.stat-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.92rem;
+  color: #F4F4F5;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.stat-desc {
+  font-size: 0.75rem;
+  color: rgba(244,244,245,0.4);
+}
+.stat-line {
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 32px; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,107,53,0.45), transparent);
+  border-radius: 99px;
+}
+</style>
+
+<script>
+function animateCounter(el: Element) {
+  const numEl    = el.querySelector('.stat-number') as HTMLElement;
+  const target   = parseFloat(el.getAttribute('data-target') || '0');
+  const isDecimal = !Number.isInteger(target);
+  const duration = 1800;
+  const start    = performance.now();
+
+  function update(now: number) {
+    const progress = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const current = target * ease;
+    numEl.textContent = isDecimal ? current.toFixed(1) : Math.floor(current).toString();
+    if (progress < 1) requestAnimationFrame(update);
+    else numEl.textContent = isDecimal ? target.toFixed(1) : target.toString();
+  }
+  requestAnimationFrame(update);
+}
+
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCounter(e.target);
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.stat-value[data-target]').forEach(el => io.observe(el));
+</script>

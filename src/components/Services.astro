@@ -1,0 +1,283 @@
+---
+const services = [
+  {
+    icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2.5"/><circle cx="12" cy="17.5" r="1"/><path d="M9 5h6"/></svg>`,
+    tag: 'Tüm Markalar',
+    title: 'Telefon Tamiri',
+    desc: 'iPhone, Samsung, Xiaomi, Huawei ve tüm akıllı telefon markalarında donanım ve yazılım servisi.',
+    items: ['Ekran Değişimi', 'Batarya', 'Kamera Modülü', 'Şarj Girişi', 'Sıvı Teması', 'Hoparlör / Mikrofon', 'Face ID Onarımı', 'Titreşim Motoru'],
+    more: true,
+    img: 'https://images.pexels.com/photos/4709378/pexels-photo-4709378.jpeg?auto=compress&cs=tinysrgb&w=800&h=520&dpr=1',
+    alt: 'Telefon iç komponentlerine yakın çekim',
+  },
+  {
+    icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 12m-2 0a2 2 0 104 0 2 2 0 10-4 0"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M6.5 6.5l4 4M17.5 6.5l-4 4M6.5 17.5l4-4M17.5 17.5l-4-4"/></svg>`,
+    tag: 'Drone Servisi',
+    title: 'Drone Tamir & Bakım',
+    desc: 'DJI, Autel, Parrot ve diğer markalar için motor, gimbal, ESC onarımı ve kalibrasyon.',
+    items: ['Motor Değişimi', 'Kamera Gimbal', 'ESC Onarımı', 'Genel Bakım', 'Kalibrasyon', 'Gövde Onarımı', 'GPS Modülü', 'Batarya Sistemi'],
+    more: true,
+    img: 'https://images.pexels.com/photos/336232/pexels-photo-336232.jpeg?auto=compress&cs=tinysrgb&w=800&h=520&dpr=1',
+    alt: 'Havada uçan profesyonel drone',
+  },
+  {
+    icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M8 14h2M14 14h2"/></svg>`,
+    tag: 'Mikro Lehim',
+    title: 'Elektronik Onarım',
+    desc: 'Laptop, tablet ve elektronik kartlarda anakart, güç devresi ve BGA lehim çalışması.',
+    items: ['Anakart Onarımı', 'Güç Kaynağı', 'Devre Kartı', 'BGA Lehim', 'Laptop / Tablet', 'Oyun Konsolu', 'Grafik Kartı', 'Ses Kartı'],
+    more: true,
+    img: 'https://images.pexels.com/photos/9242896/pexels-photo-9242896.jpeg?auto=compress&cs=tinysrgb&w=800&h=520&dpr=1',
+    alt: 'Anakart üzerinde lehim çalışması yakın çekim',
+  },
+  {
+    icon: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h1m16 0h1M12 3v1m0 16v1M5.6 5.6l.7.7m12.1-.7-.7.7M5.6 18.4l.7-.7m12.1.7-.7-.7"/><circle cx="12" cy="12" r="4"/><path d="M12 8v1M12 15v1M8 12h1M15 12h1"/></svg>`,
+    tag: 'OBD & ECU',
+    title: 'Araç Beyin Tamiri',
+    desc: 'Araç elektronik kontrol üniteleri (ECU / Beyin) programlama, onarım ve arıza tespit hizmetleri.',
+    items: ['ECU Programlama', 'ECU Onarımı', 'ABS Beyni', 'Airbag Modülü', 'Şanzıman Beyni', 'Klima Beyni', 'BSI / BCM', 'OBD Teşhis'],
+    more: true,
+    img: 'https://images.pexels.com/photos/6636458/pexels-photo-6636458.jpeg?auto=compress&cs=tinysrgb&w=800&h=520&dpr=1',
+    alt: 'Araç ECU elektronik kart yakın çekim',
+  },
+];
+---
+
+<section id="hizmetler" class="services-section" aria-labelledby="services-title">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">
+        <span style="width:6px;height:6px;background:#FF6B35;border-radius:50%;display:inline-block;box-shadow:0 0 8px #FF6B35"></span>
+        Hizmetlerimiz
+      </div>
+      <h2 id="services-title" class="section-title">
+        Her Cihaza<br/>
+        <span class="gradient-text">Özel Çözüm</span>
+      </h2>
+      <p class="section-sub">
+        Telefon, drone, elektronik ve araç elektroniği alanlarında
+        özenli teknik servis. Tüm marka ve modeller.
+      </p>
+    </div>
+
+    <!-- 4-column grid -->
+    <div class="services-grid">
+      {services.map((s, i) => (
+        <article class={`service-card card tilt reveal reveal-d${(i % 4) + 1}`} data-tilt>
+          <div class="tilt-inner">
+            <div class="service-img-wrap">
+              <img src={s.img} alt={s.alt} loading="lazy" width="800" height="520" class="service-img"/>
+              <div class="service-img-overlay"></div>
+              <span class="service-tag">{s.tag}</span>
+            </div>
+
+            <div class="service-body">
+              <div class="service-icon-wrap">
+                <Fragment set:html={s.icon} />
+              </div>
+              <h3 class="service-title">{s.title}</h3>
+              <p class="service-desc">{s.desc}</p>
+
+              <ul class="service-items" aria-label={s.title + ' kapsamı'}>
+                {s.items.map(item => (
+                  <li class="service-item">
+                    <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true">
+                      <circle cx="6" cy="6" r="5.5" stroke="#FF6B35" stroke-width="1" fill="none"/>
+                      <path d="M3.5 6l1.7 1.7L8.5 4.5" stroke="#FF6B35" stroke-width="1.3" fill="none"/>
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+                {s.more && (
+                  <li class="service-item service-item-more">
+                    <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true">
+                      <circle cx="6" cy="6" r="5.5" stroke="rgba(255,107,53,0.4)" stroke-width="1" fill="none" stroke-dasharray="2 2"/>
+                    </svg>
+                    ve daha fazlası...
+                  </li>
+                )}
+              </ul>
+
+              <a href="#iletisim" class="service-cta">
+                Bu Hizmet İçin İletişime Geç
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.services-section {
+  padding: 110px 0;
+  background: var(--bg);
+}
+
+.section-header {
+  text-align: center;
+  max-width: 580px;
+  margin: 0 auto 64px;
+}
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: #F4F4F5;
+  margin: 16px 0 14px;
+}
+.section-sub {
+  color: rgba(244,244,245,0.55);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* 2-col on tablet, 4-col on desktop */
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 640px)  { .services-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1200px) { .services-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.service-card { overflow: hidden; }
+.service-card .tilt-inner { display: flex; flex-direction: column; height: 100%; }
+
+.service-img-wrap {
+  position: relative;
+  height: 190px;
+  overflow: hidden;
+  border-radius: 22px 22px 0 0;
+}
+.service-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16,1,0.3,1), filter 0.4s;
+  filter: brightness(0.82) saturate(1.1);
+}
+.service-card:hover .service-img { transform: scale(1.07); filter: brightness(0.95) saturate(1.2); }
+
+.service-img-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,10,18,0.88) 0%, rgba(10,10,18,0.0) 55%);
+}
+.service-tag {
+  position: absolute;
+  top: 12px; right: 12px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: rgba(255,107,53,0.18);
+  border: 1px solid rgba(255,107,53,0.32);
+  color: #FFB68A;
+  backdrop-filter: blur(8px);
+}
+
+.service-body {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.service-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  background: rgba(255,107,53,0.1);
+  color: #FF6B35;
+  border: 1px solid rgba(255,107,53,0.22);
+}
+
+.service-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #F4F4F5;
+  margin-bottom: 8px;
+}
+.service-desc {
+  font-size: 0.84rem;
+  color: rgba(244,244,245,0.55);
+  line-height: 1.65;
+  margin-bottom: 16px;
+}
+
+.service-items {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 18px;
+  flex: 1;
+}
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: rgba(244,244,245,0.65);
+  padding: 4px 9px;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.service-item-more {
+  color: rgba(255,107,53,0.55);
+  border-style: dashed;
+  border-color: rgba(255,107,53,0.18);
+  background: transparent;
+  font-style: italic;
+}
+
+.service-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #FF6B35;
+  border: 1px solid rgba(255,107,53,0.25);
+  background: rgba(255,107,53,0.04);
+  border-radius: 12px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  margin-top: auto;
+}
+.service-cta:hover {
+  background: rgba(255,107,53,0.1);
+  border-color: rgba(255,107,53,0.5);
+  color: #FFB68A;
+}
+.service-cta svg { transition: transform 0.2s; flex-shrink: 0; }
+.service-cta:hover svg { transform: translateX(3px); }
+</style>
+
+<script>
+const cards = document.querySelectorAll<HTMLElement>('[data-tilt]');
+cards.forEach(card => {
+  const inner = card.querySelector<HTMLElement>('.tilt-inner');
+  if (!inner) return;
+  card.addEventListener('mousemove', (e) => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    inner.style.transform = `perspective(900px) rotateX(${(0.5 - y) * 6}deg) rotateY(${(x - 0.5) * 8}deg) translateY(-4px)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    inner.style.transform = 'perspective(900px) rotateX(0) rotateY(0) translateY(0)';
+  });
+});
+</script>

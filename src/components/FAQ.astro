@@ -1,0 +1,158 @@
+---
+const faqs = [
+  {
+    q: 'Cihazımı incelemeden fiyat öğrenebilir miyim?',
+    a: 'Cihazların durumu birbirinden farklı olduğu için telefonda kesin fiyat vermiyoruz. Cihazınızı görmeden tahmini bir aralık paylaşabilir, kesin bilgiyi ise inceleme sonrası iletebiliriz.',
+  },
+  {
+    q: 'Ön inceleme ücretli mi?',
+    a: 'Hayır, cihazınızın ön incelemesi ücretsizdir. Fiyat ve süreyi öğrendikten sonra işleme başlamamayı tercih ederseniz herhangi bir ücret ödemezsiniz.',
+  },
+  {
+    q: 'Tamir genelde ne kadar sürer?',
+    a: 'Çoğu standart işlem aynı gün veya ertesi gün tamamlanır. Anakart, mikro lehim gibi daha detaylı çalışmalar 2-5 gün sürebilir. Cihazınıza özel süreyi inceleme sonrası iletiriz.',
+  },
+  {
+    q: 'Hangi marka ve modelleri tamir ediyorsunuz?',
+    a: 'Apple iPhone, Samsung Galaxy, Xiaomi, Huawei, OnePlus, Oppo, Vivo gibi telefon markalarını; DJI, Autel, Parrot başta olmak üzere drone\'ları; tüm laptop ve tablet markalarını onarıyoruz.',
+  },
+  {
+    q: 'Tamir sırasında verilerim güvende mi?',
+    a: 'Cihazınızdaki kişisel verilere müdahale edilmez. Yine de önemli verileriniz için tamir öncesi yedek almanızı öneririz. Ekran ve donanım tamirlerinde verileriniz korunur.',
+  },
+  {
+    q: 'Orijinal yedek parça kullanıyor musunuz?',
+    a: 'Öncelikli tercihimiz orijinal parçalardır. Orijinal parçanın temin edilemediği durumlarda, sizinle paylaşılarak yüksek kaliteli muadil parçalar kullanılır. Karar her zaman size aittir.',
+  },
+  {
+    q: 'Şehir dışından kargo ile gönderebilir miyim?',
+    a: 'Evet, Türkiye genelinden kargo ile cihazınızı gönderebilirsiniz. Tamir sonrası güvenli paketleme ile geri gönderilir. Detaylar için lütfen bize ulaşın.',
+  },
+  {
+    q: 'Çalışma saatleriniz nedir?',
+    a: 'Pazartesi-Cumartesi 09:00-19:00 saatleri arasında hizmet veriyoruz. Pazar günleri kapalıyız ancak bize WhatsApp\'tan ulaşabilirsiniz.',
+  },
+];
+---
+
+<section id="sss" class="faq-section" aria-labelledby="faq-title">
+  <div class="container">
+    <div class="faq-inner">
+      <div class="faq-header reveal">
+        <div class="section-label" style="margin-bottom:20px">
+          <span style="width:6px;height:6px;background:#FF6B35;border-radius:50%;display:inline-block;box-shadow:0 0 8px #FF6B35"></span>
+          Sık Sorulan Sorular
+        </div>
+        <h2 id="faq-title" class="section-title">
+          Aklınızdaki<br/>
+          <span class="gradient-text">Sorulara Yanıt</span>
+        </h2>
+        <p class="section-sub" style="margin-top:16px;max-width:320px">
+          Burada yanıt bulamadığınız bir konu varsa, doğrudan bize ulaşmaktan çekinmeyin.
+        </p>
+        <a href="#iletisim" class="btn-primary" style="margin-top:28px;display:inline-flex">
+          İletişime Geç
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="faq-list reveal reveal-d1">
+        {faqs.map((faq, i) => (
+          <details class="faq-item" name="faq-group">
+            <summary class="faq-question">
+              <span class="faq-q-num">{String(i+1).padStart(2,'0')}</span>
+              <span class="faq-q-text" data-cfg={`faq-${i}-q`}>{faq.q}</span>
+              <span class="faq-chevron" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </span>
+            </summary>
+            <div class="faq-answer">
+              <p data-cfg={`faq-${i}-a`}>{faq.a}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.faq-section {
+  padding: 110px 0;
+  background: #0f0f1c;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.faq-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 56px;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .faq-inner { grid-template-columns: 320px 1fr; gap: 80px; }
+}
+
+.faq-list { display: flex; flex-direction: column; }
+
+.faq-item {
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.faq-item:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 0;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: color 0.2s;
+}
+.faq-question::-webkit-details-marker { display: none; }
+.faq-question:hover .faq-q-text { color: #FF6B35; }
+
+.faq-q-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(255,107,53,0.4);
+  flex-shrink: 0;
+  width: 24px;
+}
+.faq-q-text {
+  flex: 1;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(244,244,245,0.88);
+  transition: color 0.2s;
+}
+.faq-chevron {
+  flex-shrink: 0;
+  color: rgba(244,244,245,0.3);
+  transition: transform 0.3s ease, color 0.2s;
+}
+
+details[open] .faq-chevron { transform: rotate(180deg); color: #FF6B35; }
+details[open] .faq-q-text  { color: #FF6B35; }
+
+.faq-answer {
+  padding: 0 0 22px 38px;
+  animation: faq-open 0.3s ease;
+}
+@keyframes faq-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+.faq-answer p {
+  font-size: 0.9rem;
+  color: rgba(244,244,245,0.55);
+  line-height: 1.75;
+}
+</style>

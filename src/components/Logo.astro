@@ -1,0 +1,100 @@
+---
+interface Props {
+  size?: number;
+  showText?: boolean;
+  textClass?: string;
+}
+const { size = 36, showText = true, textClass = '' } = Astro.props;
+---
+<a href="/" class="oz-logo" aria-label="ÖzKartal İletişim Ana Sayfa">
+  <svg width={size} height={size} viewBox="0 0 48 48" fill="none" aria-hidden="true" class="oz-logo-mark">
+    <defs>
+      <linearGradient id="ozg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF6B35"/>
+        <stop offset="100%" stop-color="#F59E0B"/>
+      </linearGradient>
+      <linearGradient id="ozg2" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFB068"/>
+        <stop offset="100%" stop-color="#FF6B35"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Outer chip/PCB rounded square -->
+    <rect x="3" y="3" width="42" height="42" rx="11"
+          fill="url(#ozg)" fill-opacity="0.10"
+          stroke="url(#ozg)" stroke-width="1.6"/>
+
+    <!-- Top chip pins (3) -->
+    <rect x="11" y="0.5" width="2" height="3.5" rx="0.8" fill="url(#ozg)"/>
+    <rect x="23" y="0.5" width="2" height="3.5" rx="0.8" fill="url(#ozg)"/>
+    <rect x="35" y="0.5" width="2" height="3.5" rx="0.8" fill="url(#ozg)"/>
+    <!-- Bottom pins -->
+    <rect x="11" y="44" width="2" height="3.5" rx="0.8" fill="url(#ozg)"/>
+    <rect x="23" y="44" width="2" height="3.5" rx="0.8" fill="url(#ozg)"/>
+    <rect x="35" y="44" width="2" height="3.5" rx="0.8" fill="url(#ozg)"/>
+    <!-- Left pins -->
+    <rect x="0.5" y="11" width="3.5" height="2" rx="0.8" fill="url(#ozg)"/>
+    <rect x="0.5" y="23" width="3.5" height="2" rx="0.8" fill="url(#ozg)"/>
+    <rect x="0.5" y="35" width="3.5" height="2" rx="0.8" fill="url(#ozg)"/>
+    <!-- Right pins -->
+    <rect x="44" y="11" width="3.5" height="2" rx="0.8" fill="url(#ozg)"/>
+    <rect x="44" y="23" width="3.5" height="2" rx="0.8" fill="url(#ozg)"/>
+    <rect x="44" y="35" width="3.5" height="2" rx="0.8" fill="url(#ozg)"/>
+
+    <!-- Center: crossed wrench + screwdriver (repair tools) -->
+    <!-- Wrench, diagonal -->
+    <path d="M16 32 L24 24 M14 34 a3 3 0 1 1 4 -4 L20 28 L28 20 L26 18 L18 26 a3 3 0 0 1 -4 4 Z"
+          fill="url(#ozg2)" opacity="0.95"/>
+    <!-- Screwdriver, opposite diagonal -->
+    <path d="M32 16 L30 14 L24 20 L26 22 Z"
+          fill="url(#ozg2)" opacity="0.95"/>
+    <path d="M26 22 L30 18"
+          stroke="url(#ozg2)" stroke-width="2.4" stroke-linecap="round"/>
+
+    <!-- Center accent dot — power/connection indicator -->
+    <circle cx="24" cy="24" r="1.5" fill="#FF6B35">
+      <animate attributeName="opacity" values="1;0.4;1" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+  </svg>
+
+  {showText && (
+    <span class={`oz-logo-text ${textClass}`}>
+      <span class="oz-logo-orange" data-cfg="logoOz">Öz</span><span data-cfg="logoRest">Kartal</span>
+    </span>
+  )}
+</a>
+
+<style>
+.oz-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.oz-logo:hover {
+  opacity: 0.92;
+  transform: scale(1.02);
+}
+.oz-logo-mark {
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 12px rgba(255,107,53,0.3));
+}
+.oz-logo-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: #F4F4F5;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.oz-logo-orange {
+  background: linear-gradient(135deg, #FF6B35, #F59E0B);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+</style>

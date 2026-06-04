@@ -1,0 +1,321 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import ShapeBackground from '../components/ShapeBackground.astro';
+import ChatWidget from '../components/ChatWidget.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'ÖzKartal İletişim — Telefon, Drone ve Elektronik Tamir Servisi | Elazığ',
+  description = 'Elazığ\'ın güvenilir teknik servisi. iPhone, Samsung ve tüm akıllı telefonlar, DJI drone tamiri, anakart, elektronik ve araç beyin (ECU) onarımı. Ücretsiz ön inceleme, şeffaf fiyat.',
+} = Astro.props;
+
+const siteUrl = 'https://ozkartal.com.tr';
+const ogImage = `${siteUrl}/og-image.jpg`;
+---
+
+<!doctype html>
+<html lang="tr" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <!-- ─── Primary SEO ─── -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content="telefon tamiri elazığ, iphone tamiri elazığ, samsung tamiri elazığ, drone servisi elazığ, dji tamir, elektronik tamir elazığ, anakart tamiri, ecu programlama elazığ, araç beyin tamiri, özkartal iletişim, ekran değişimi elazığ, batarya değişimi, laptop tamiri elazığ" />
+    <meta name="author" content="ÖzKartal İletişim" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href={siteUrl} />
+
+    <!-- ─── Open Graph ─── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ÖzKartal İletişim" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="ÖzKartal İletişim — Elazığ Teknik Servis" />
+    <meta property="og:locale" content="tr_TR" />
+
+    <!-- ─── Twitter / X Card ─── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- ─── PWA / Mobile ─── -->
+    <meta name="theme-color" content="#FF6B35" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ÖzKartal" />
+    <meta name="application-name" content="ÖzKartal İletişim" />
+    <meta name="msapplication-TileColor" content="#FF6B35" />
+
+    <!-- ─── Icons ─── -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- ─── Preconnect ─── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="preconnect" href="https://prod.spline.design" crossorigin />
+    <link rel="dns-prefetch" href="https://basemaps.cartocdn.com" />
+    <link rel="dns-prefetch" href="https://images.pexels.com" />
+
+    <!-- ─── Fonts ─── -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ─── Spline preload (reduces robot delay on production) ─── -->
+    <link rel="modulepreload" href="https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js" crossorigin />
+    <link rel="preload" href="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" as="fetch" crossorigin />
+
+    <!-- ─── Security meta ─── -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="geolocation=(self), camera=(), microphone=(), payment=()" />
+
+    <!-- ─── Schema.org JSON-LD — LocalBusiness + Services ─── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "LocalBusiness",
+          "@id": "https://ozkartal.com.tr/#business",
+          "name": "ÖzKartal İletişim",
+          "alternateName": "Özkartal Teknik Servis",
+          "description": "Elazığ'ın güvenilir teknik servisi. Telefon, drone, elektronik ve araç beyin tamiri.",
+          "url": "https://ozkartal.com.tr",
+          "telephone": "+90-424-000-00-00",
+          "email": "info@ozkartaliletisim.com",
+          "image": "https://ozkartal.com.tr/og-image.jpg",
+          "priceRange": "₺₺",
+          "currenciesAccepted": "TRY",
+          "paymentAccepted": "Nakit, Kredi Kartı, Havale",
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+              "opens": "09:00",
+              "closes": "19:00"
+            }
+          ],
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Elazığ",
+            "addressRegion": "Elazığ",
+            "addressCountry": "TR"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 38.6810,
+            "longitude": 39.2272
+          },
+          "areaServed": {
+            "@type": "City",
+            "name": "Elazığ"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Teknik Servis Hizmetleri",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Telefon Tamiri",
+                  "description": "iPhone, Samsung, Xiaomi ve tüm akıllı telefon markalarında ekran, batarya, kamera ve anakart servisi."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Drone Servisi",
+                  "description": "DJI, Autel, Parrot ve tüm drone markalarında motor, gimbal ve kalibrasyon."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Elektronik Tamir",
+                  "description": "Laptop, tablet ve elektronik kartlarda anakart onarımı ve mikro lehim."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Araç Beyin (ECU) Tamiri",
+                  "description": "Araç ECU programlama, onarım ve OBD arıza tespit hizmetleri."
+                }
+              }
+            ]
+          },
+          "sameAs": []
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://ozkartal.com.tr/#website",
+          "url": "https://ozkartal.com.tr",
+          "name": "ÖzKartal İletişim",
+          "inLanguage": "tr",
+          "publisher": { "@id": "https://ozkartal.com.tr/#business" }
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <ShapeBackground />
+    <Nav />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <ChatWidget />
+
+    <!-- ─── Scroll reveal ─── -->
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.10, rootMargin: '0px 0px -30px 0px' }
+      );
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () =>
+          document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
+        );
+      } else {
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+      }
+    </script>
+
+    <!-- ─── Admin Config Injection ─── -->
+    <script>
+      function applyAdminConfig() {
+        let cfg = {};
+        try { cfg = JSON.parse(localStorage.getItem('oz-config') || '{}'); } catch {}
+
+        const setText = (selector, value) => {
+          if (!value) return;
+          document.querySelectorAll(selector).forEach(el => { el.textContent = value; });
+        };
+        const setAttr = (selector, attr, value) => {
+          if (!value) return;
+          document.querySelectorAll(selector).forEach(el => { el.setAttribute(attr, value); });
+        };
+        const setImg = (selector, value) => {
+          if (!value) return;
+          document.querySelectorAll(selector).forEach(el => {
+            if (el instanceof HTMLImageElement) el.src = value;
+          });
+        };
+
+        setText('[data-cfg="phone"]', cfg.phone);
+        setAttr('a[data-cfg-href="phone"]', 'href', cfg.phone ? 'tel:' + cfg.phone.replace(/[^\d+]/g,'') : null);
+        setText('[data-cfg="email"]', cfg.email);
+        setAttr('a[data-cfg-href="email"]', 'href', cfg.email ? 'mailto:'+cfg.email : null);
+        setText('[data-cfg="address"]', cfg.address);
+        setText('[data-cfg="hours"]', cfg.hours);
+        setAttr('a[data-cfg-href="whatsapp"]', 'href', cfg.whatsapp ? 'https://wa.me/'+cfg.whatsapp.replace(/[^\d]/g,'') : null);
+
+        setText('[data-cfg="heroLine1"]', cfg.heroLine1);
+        setText('[data-cfg="heroLine2"]', cfg.heroLine2);
+        setText('[data-cfg="heroSub"]', cfg.heroSub);
+        setText('[data-cfg="heroCta1"]', cfg.heroCta1);
+        setText('[data-cfg="heroCta2"]', cfg.heroCta2);
+        setText('[data-cfg="logoOz"]', cfg.logoOz);
+        setText('[data-cfg="logoRest"]', cfg.logoRest);
+
+        if (cfg.seoTitle) document.title = cfg.seoTitle;
+        if (cfg.seoDesc) {
+          const m = document.querySelector('meta[name="description"]');
+          if (m) m.setAttribute('content', cfg.seoDesc);
+        }
+
+        if (Array.isArray(cfg.services)) {
+          cfg.services.forEach((s, i) => {
+            if (s?.title) setText(`[data-cfg="serviceTitle-${i}"]`, s.title);
+            if (s?.desc)  setText(`[data-cfg="serviceDesc-${i}"]`, s.desc);
+            if (s?.img)   setImg(`[data-cfg-src="serviceImg-${i}"]`, s.img);
+          });
+        }
+        if (Array.isArray(cfg.gallery)) {
+          cfg.gallery.forEach((url, i) => { if (url) setImg(`[data-cfg-src="gallery-${i}"]`, url); });
+        }
+        if (Array.isArray(cfg.testimonials)) {
+          cfg.testimonials.forEach((t, i) => {
+            if (t?.text)    setText(`[data-cfg="testimonial-${i}-text"]`, t.text);
+            if (t?.name)    setText(`[data-cfg="testimonial-${i}-name"]`, t.name);
+            if (t?.role)    setText(`[data-cfg="testimonial-${i}-role"]`, t.role);
+            if (t?.service) setText(`[data-cfg="testimonial-${i}-service"]`, t.service);
+          });
+        }
+        if (Array.isArray(cfg.faq)) {
+          cfg.faq.forEach((f, i) => {
+            if (f?.q) setText(`[data-cfg="faq-${i}-q"]`, f.q);
+            if (f?.a) setText(`[data-cfg="faq-${i}-a"]`, f.a);
+          });
+        }
+        setText('[data-cfg="footerTagline"]', cfg.footerTagline);
+        setText('[data-cfg="footerCopyright"]', cfg.footerCopyright);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyAdminConfig);
+      } else {
+        applyAdminConfig();
+      }
+      window.addEventListener('storage', (e) => { if (e.key === 'oz-config') location.reload(); });
+    </script>
+
+    <!-- ─── Anonymous analytics ─── -->
+    <script>
+      (function() {
+        if (location.pathname.startsWith('/admin')) return;
+        const KEY = 'oz-analytics', MAX = 500;
+        const getLog = () => { try { return JSON.parse(localStorage.getItem(KEY)||'{"views":[],"clicks":[]}'); } catch { return {views:[],clicks:[]}; } };
+        const saveLog = (l) => { try { localStorage.setItem(KEY, JSON.stringify(l)); } catch {} };
+        const log = getLog();
+        log.views.push({
+          t: Date.now(),
+          path: location.pathname + location.hash,
+          ref: (() => { try { return document.referrer ? new URL(document.referrer).hostname : 'direct'; } catch { return 'direct'; } })(),
+          ua: /Mobi/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+          w: window.innerWidth,
+        });
+        if (log.views.length > MAX) log.views = log.views.slice(-MAX);
+        saveLog(log);
+        document.addEventListener('click', (e) => {
+          const t = e.target.closest('a,button');
+          if (!t) return;
+          const label = (t.textContent||'').trim().slice(0,50);
+          if (!label) return;
+          const l2 = getLog();
+          l2.clicks.push({ t: Date.now(), label, href: t.getAttribute('href')||'', path: location.pathname });
+          if (l2.clicks.length > MAX) l2.clicks = l2.clicks.slice(-MAX);
+          saveLog(l2);
+        }, { passive: true });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,150 @@
+---
+const steps = [
+  {
+    num: '01',
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+    title: 'Bize Ulaşın',
+    desc: 'Cihazınızı dükkanımıza getirin veya önce telefon, WhatsApp ya da iletişim formundan bize ulaşın. Her zaman müsaitiz.',
+  },
+  {
+    num: '02',
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v3l2 2"/></svg>`,
+    title: 'Detaylı İnceleme',
+    desc: 'Uzman teknisyenimiz cihazınızı detaylı şekilde inceler, arızanın kaynağını belirler ve size net bir bilgi sunar.',
+  },
+  {
+    num: '03',
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/><path d="M9 12l2 2 4-4"/></svg>`,
+    title: 'Onarım & Teslim',
+    desc: 'Onayınızın ardından özenli işçilik ile cihazınız onarılır. Tüm süreç hakkında bilgilendirilirsiniz.',
+  },
+];
+---
+
+<section id="nasil-calisir" class="how-section" aria-labelledby="how-title">
+  <div class="container">
+    <div class="how-inner">
+      <div class="reveal">
+        <div class="section-label" style="margin-bottom:20px">
+          <span style="width:6px;height:6px;background:#FF6B35;border-radius:50%;display:inline-block;box-shadow:0 0 8px #FF6B35"></span>
+          Süreç Nasıl İşler?
+        </div>
+        <h2 id="how-title" class="section-title">
+          Şeffaf ve<br/>
+          <span class="gradient-text">Anlaşılır Süreç</span>
+        </h2>
+        <p class="section-sub" style="max-width:380px;margin:16px 0 28px">
+          Her aşamada sizinle iletişim halindeyiz. Sürpriz yok, ek ücret yok, beklenmedik durum yok.
+        </p>
+        <a href="#iletisim" class="btn-primary">İletişime Geç</a>
+      </div>
+
+      <div class="steps-wrap">
+        {steps.map((s, i) => (
+          <div class={`step reveal reveal-d${i+1}`}>
+            <div class="step-num-line">
+              <div class="step-num">{s.num}</div>
+              {i < steps.length - 1 && <div class="step-connector" aria-hidden="true"></div>}
+            </div>
+            <div class="step-content">
+              <div class="step-icon-wrap">
+                <Fragment set:html={s.icon} />
+              </div>
+              <h3 class="step-title">{s.title}</h3>
+              <p class="step-desc">{s.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.how-section {
+  padding: 110px 0;
+  background: #0f0f1c;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.how-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 56px;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .how-inner { grid-template-columns: 340px 1fr; gap: 80px; }
+}
+
+.steps-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+@media (min-width: 640px) {
+  .steps-wrap { flex-direction: row; }
+}
+
+.step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-num-line {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 0;
+}
+
+.step-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,107,53,0.35);
+  flex-shrink: 0;
+  width: 64px;
+}
+
+.step-connector {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(255,107,53,0.35), rgba(255,107,53,0.05));
+  margin: 0 8px;
+}
+@media (max-width: 639px) {
+  .step-connector { display: none; }
+}
+
+.step-content { padding-right: 24px; }
+@media (max-width: 639px) {
+  .step-content { padding-right: 0; border-left: 1px solid rgba(255,107,53,0.18); padding-left: 22px; margin-bottom: 36px; }
+}
+
+.step-icon-wrap {
+  width: 54px; height: 54px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,107,53,0.08);
+  border: 1px solid rgba(255,107,53,0.2);
+  border-radius: 16px;
+  color: #FF6B35;
+  margin-bottom: 14px;
+}
+
+.step-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #F4F4F5;
+  margin-bottom: 8px;
+}
+.step-desc {
+  font-size: 0.86rem;
+  color: rgba(244,244,245,0.5);
+  line-height: 1.7;
+}
+</style>

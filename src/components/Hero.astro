@@ -1,0 +1,426 @@
+---
+---
+
+<section class="hero" aria-label="Ana banner">
+  <!-- Fullscreen Spline 3D background — with instant gradient poster fallback -->
+  <div class="spline-bg">
+    <!-- Static poster: renders instantly while Spline loads behind it -->
+    <div class="spline-poster" id="spline-poster" aria-hidden="true"></div>
+    <spline-viewer
+      id="spline-scene"
+      url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+      events-target="global">
+    </spline-viewer>
+    <!-- Watermark masks (Spline logo bottom-right + any overlay) -->
+    <div class="spline-watermark-mask"></div>
+  </div>
+
+  <!-- Color grading overlay — pulls Spline into the brand palette -->
+  <div class="hero-grade" aria-hidden="true"></div>
+
+  <!-- Left fade — so text remains readable -->
+  <div class="hero-left-fade" aria-hidden="true"></div>
+
+  <!-- Spotlight SVG accent -->
+  <svg class="spotlight" viewBox="0 0 3787 2842" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g filter="url(#hero-filter)">
+      <ellipse cx="1924.71" cy="273.501" rx="1924.71" ry="273.501"
+        transform="matrix(-0.822377 -0.568943 -0.568943 0.822377 3631.88 2291.09)"
+        fill="#FF6B35" fill-opacity="0.22"></ellipse>
+    </g>
+    <defs>
+      <filter id="hero-filter" x="0.86" y="0.84" width="3785.16" height="2840.26" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
+        <feGaussianBlur stdDeviation="151" result="effect1_foregroundBlur_1065_8"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Ambient glow blob — right side only, no left leak -->
+  <div class="hero-blob b1" aria-hidden="true"></div>
+
+  <!-- Floating particles overlay -->
+  <div class="hero-particles" id="hero-particles" aria-hidden="true"></div>
+
+  <!-- Foreground content -->
+  <div class="container hero-content">
+    <div class="section-label reveal">
+      <span class="label-dot"></span>
+      Elazığ'ın Teknik Servisi
+    </div>
+
+    <h1 class="hero-title reveal reveal-d1">
+      <span data-cfg="heroLine1">Cihazınız</span><br/>
+      <span class="gradient-text" data-cfg="heroLine2">Doğru Ellerde.</span>
+    </h1>
+
+    <p class="hero-sub reveal reveal-d2" data-cfg="heroSub">
+      iPhone, Samsung, DJI ve elektronik cihazlarınız için özenli teknik servis.
+      Ücretsiz ön inceleme, şeffaf süreç, deneyimli ekip.
+    </p>
+
+    <div class="hero-ctas reveal reveal-d3">
+      <a href="#iletisim" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+        </svg>
+        İletişime Geç
+      </a>
+      <a href="#hizmetler" class="btn-outline">
+        Hizmetleri İncele
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="hero-badges reveal reveal-d4">
+      <div class="badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2"><path d="M9 12l2 2 4-4M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
+        Ücretsiz Ön İnceleme
+      </div>
+      <div class="badge-sep"></div>
+      <div class="badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2"><path d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Hızlı Süreç
+      </div>
+      <div class="badge-sep"></div>
+      <div class="badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2"><path d="M3 7l9-4 9 4M3 7v10l9 4M3 7l9 4m0 10V11m0 10l9-4V7l-9 4"/></svg>
+        Deneyimli Ekip
+      </div>
+    </div>
+  </div>
+
+  <!-- Seamless transition to next section -->
+  <div class="hero-bottom-fade" aria-hidden="true"></div>
+
+  <div class="scroll-indicator" aria-hidden="true">
+    <div class="scroll-line"></div>
+    <span>Aşağı Kaydır</span>
+  </div>
+</section>
+
+<style>
+.hero {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: #06060c;
+  isolation: isolate;
+}
+
+/* Fullscreen Spline background */
+.spline-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+spline-viewer {
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+spline-viewer.loaded { opacity: 1; }
+
+/* Spline watermark mask — bottom right "Built with Spline" badge — opaque cover */
+.spline-watermark-mask {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 280px;
+  height: 110px;
+  background:
+    linear-gradient(to top left, #06060c 0%, #06060c 35%, rgba(6,6,12,0.85) 60%, transparent 100%);
+  pointer-events: auto;
+  z-index: 5;
+}
+/* Block right-click on Spline scene to prevent context menu reveal */
+spline-viewer { user-select: none; -webkit-user-drag: none; }
+
+/* Color grading — push Spline's neutral whites into warm orange brand tone */
+.hero-grade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 70% at 75% 50%, rgba(255,107,53,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 30%, rgba(255,140,66,0.12) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(6,6,12,0) 0%, rgba(6,6,12,0.15) 60%, rgba(6,6,12,0.55) 100%);
+  mix-blend-mode: screen;
+}
+
+/* Left readability gradient */
+.hero-left-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(6,6,12,0.92) 0%,
+    rgba(6,6,12,0.78) 28%,
+    rgba(6,6,12,0.35) 50%,
+    rgba(6,6,12,0) 75%
+  );
+}
+
+/* Seamless bottom transition into next section */
+.hero-bottom-fade {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 200px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(10,10,18,0) 0%,
+    rgba(10,10,18,0.55) 45%,
+    rgba(10,10,18,0.92) 80%,
+    #0A0A12 100%
+  );
+}
+
+/* Spotlight SVG */
+.spotlight {
+  position: absolute;
+  top: -40%;
+  right: -15%;
+  height: 169%;
+  width: 138%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  animation: spotlight-in 1.4s 0.2s ease-out forwards;
+}
+@keyframes spotlight-in {
+  0%   { opacity: 0; transform: translate(60px, -40px) scale(0.5); }
+  100% { opacity: 1; transform: translate(0, 0) scale(1); }
+}
+@media (min-width: 1024px) {
+  .spotlight { width: 84%; }
+}
+
+/* Ambient blobs */
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  pointer-events: none;
+  z-index: 1;
+  animation: blob-float 14s ease-in-out infinite;
+}
+.b1 {
+  width: 640px; height: 640px;
+  background: radial-gradient(circle, rgba(255,107,53,0.28), transparent 70%);
+  top: -180px; right: -100px;
+  animation-delay: 0s;
+}
+@keyframes blob-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  33%  { transform: translateY(-30px) scale(1.05); }
+  66%  { transform: translateY(15px) scale(0.96); }
+}
+
+/* Floating CSS particles */
+.hero-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: particle-float linear infinite;
+  opacity: 0;
+}
+@keyframes particle-float {
+  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
+}
+
+/* Poster — visible instantly, fades out when Spline loads */
+.spline-poster {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 600px 700px at 75% 50%, rgba(40,30,40,0.85) 0%, transparent 60%),
+    radial-gradient(ellipse 500px 600px at 80% 60%, rgba(255,107,53,0.20) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 80% at 50% 50%, rgba(20,20,30,0.7) 0%, #06060c 80%);
+  transition: opacity 0.6s ease;
+  opacity: 1;
+}
+.spline-poster.hidden { opacity: 0; }
+
+/* Content */
+.hero-content {
+  position: relative;
+  z-index: 4;
+  padding-top: 120px;
+  padding-bottom: 80px;
+  max-width: 680px;
+}
+
+.label-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: #FF6B35;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #FF6B35;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 12px #FF6B35; }
+  50% { opacity: 0.5; transform: scale(0.7); box-shadow: 0 0 4px #FF6B35; }
+}
+
+.hero-title {
+  font-size: clamp(2.6rem, 6vw, 4.8rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  color: #F4F4F5;
+  margin-top: 20px;
+  margin-bottom: 22px;
+  background: linear-gradient(to bottom, #fafafa 0%, #a3a3a3 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+}
+.hero-title .gradient-text {
+  background: linear-gradient(135deg, #FF6B35 0%, #FFB068 50%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: rgba(244,244,245,0.78);
+  line-height: 1.7;
+  max-width: 540px;
+  margin-bottom: 32px;
+  text-shadow: 0 2px 14px rgba(0,0,0,0.55);
+}
+
+.hero-ctas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 38px;
+}
+
+.hero-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(244,244,245,0.7);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+}
+.badge-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.18); }
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.55;
+}
+.scroll-indicator span {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: 'Space Grotesk', sans-serif;
+}
+.scroll-line {
+  width: 1px; height: 36px;
+  background: linear-gradient(to bottom, rgba(255,107,53,0.9), transparent);
+  animation: scroll-pulse 2s ease-in-out infinite;
+}
+@keyframes scroll-pulse {
+  0%   { transform: scaleY(0.4); transform-origin: top; opacity: 0.3; }
+  50%  { transform: scaleY(1);   opacity: 1; }
+  100% { transform: scaleY(0.4); transform-origin: bottom; opacity: 0.3; }
+}
+
+/* Mobile: less aggressive left-fade so Spline shows behind text */
+@media (max-width: 767px) {
+  .hero-left-fade {
+    background: linear-gradient(
+      180deg,
+      rgba(6,6,12,0.85) 0%,
+      rgba(6,6,12,0.55) 40%,
+      rgba(6,6,12,0.4) 100%
+    );
+  }
+}
+</style>
+
+<!-- Spline web component (no React needed) -->
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js" is:inline></script>
+
+<script>
+  /* ─── CSS Floating Particles ───────────────────────────── */
+  const container = document.getElementById('hero-particles');
+  if (container) {
+    const colors = ['rgba(255,107,53,', 'rgba(245,158,11,', 'rgba(255,140,66,'];
+    for (let i = 0; i < 28; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 4 + 2;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      p.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        left: ${Math.random() * 100}%;
+        background: ${color}${Math.random() * 0.6 + 0.2});
+        animation-duration: ${Math.random() * 14 + 10}s;
+        animation-delay: ${Math.random() * -20}s;
+        filter: blur(${Math.random() > 0.5 ? 1 : 0}px);
+      `;
+      container.appendChild(p);
+    }
+  }
+
+  /* ─── Spline scene load handler ───────────────────────────── */
+  const splineEl: any = document.getElementById('spline-scene');
+  const poster = document.getElementById('spline-poster');
+  if (splineEl) {
+    splineEl.addEventListener('load', () => {
+      splineEl.classList.add('loaded');
+      poster?.classList.add('hidden');
+    });
+    splineEl.addEventListener('load-error', () => {
+      poster?.classList.remove('hidden');
+    });
+    // safety fallback
+    setTimeout(() => splineEl.classList.add('loaded'), 5000);
+    setTimeout(() => poster?.classList.add('hidden'), 5200);
+  }
+</script>
