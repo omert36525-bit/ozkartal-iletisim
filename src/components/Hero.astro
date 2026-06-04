@@ -375,35 +375,66 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
   100% { transform: scaleY(0.4); transform-origin: bottom; opacity: 0.3; }
 }
 
-/* Mobile: simplify hero — no expensive blur, smaller blob */
+/* Mobile: hero layout — robot stays, but lighter overlays */
 @media (max-width: 767px) {
+  .hero {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 0;
+  }
+  /* Robot fills top half, text bottom half */
+  .spline-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 55vh;
+    bottom: auto;
+  }
+  /* Mobile-friendly poster sizing */
+  .spline-poster, .spline-watermark-mask { height: 55vh !important; bottom: auto !important; }
+  .spline-watermark-mask {
+    width: 200px;
+    height: 70px !important;
+    top: calc(55vh - 70px) !important;
+  }
+  spline-viewer { height: 55vh !important; }
+
+  /* Hero text positioned BELOW the robot */
   .hero-left-fade {
     background: linear-gradient(
       180deg,
-      rgba(6,6,12,0.55) 0%,
-      rgba(6,6,12,0.35) 40%,
-      rgba(6,6,12,0.55) 100%
+      rgba(6,6,12,0) 0%,
+      rgba(6,6,12,0.3) 40%,
+      rgba(6,6,12,0.95) 55%,
+      #06060c 100%
     );
   }
   .spotlight { display: none; }
   .hero-blob {
-    width: 280px !important;
-    height: 280px !important;
-    filter: blur(60px) !important;
+    width: 380px !important;
+    height: 380px !important;
+    filter: blur(80px) !important;
     animation: none !important;
-    top: 30% !important;
-    right: -10% !important;
+    top: 5% !important;
+    right: -15% !important;
   }
-  .hero-grade { display: none; }
+  .hero-grade {
+    background:
+      radial-gradient(ellipse 100% 50% at 50% 30%, rgba(255,107,53,0.18) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(6,6,12,0) 0%, rgba(6,6,12,0.2) 50%, rgba(6,6,12,0.6) 100%);
+  }
   .hero-content {
-    padding-top: 100px;
-    padding-bottom: 60px;
+    padding-top: 50vh;
+    padding-bottom: 50px;
     text-align: center;
+    max-width: 100%;
   }
   .hero-title { font-size: clamp(2rem, 9vw, 2.8rem) !important; }
-  .hero-sub { font-size: 0.92rem; }
+  .hero-sub { font-size: 0.92rem; max-width: 92%; margin-left: auto; margin-right: auto; }
   .hero-ctas { justify-content: center; }
   .hero-badges { justify-content: center; }
+  .scroll-indicator { bottom: 14px; }
 }
 </style>
 
@@ -431,16 +462,12 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
     }
   }
 
-  /* ─── Spline scene — DISABLE on mobile / low-end devices ─── */
-  const isMobile = window.matchMedia('(max-width: 900px)').matches
-                 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-  const isLowEnd = (navigator as any).hardwareConcurrency && (navigator as any).hardwareConcurrency <= 4;
+  /* ─── Spline scene — runs on ALL devices, poster shown until ready ─── */
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const splineEl: any = document.getElementById('spline-scene');
   const poster = document.getElementById('spline-poster');
 
-  if (isMobile || reducedMotion) {
-    // Mobile/touch: remove Spline entirely → use poster only
+  if (reducedMotion) {
     splineEl?.remove();
     poster?.classList.add('mobile-permanent');
   } else if (splineEl) {
@@ -451,8 +478,10 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
     splineEl.addEventListener('load-error', () => {
       poster?.classList.remove('hidden');
     });
-    // safety fallback
-    setTimeout(() => splineEl.classList.add('loaded'), 4000);
-    setTimeout(() => poster?.classList.add('hidden'), 4200);
+    // safety: assume loaded after 6s (mobile defer adds ~1s)
+    setTimeout(() => {
+      splineEl.classList.add('loaded');
+      poster?.classList.add('hidden');
+    }, 6000);
   }
 </script>

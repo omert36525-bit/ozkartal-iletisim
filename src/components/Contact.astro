@@ -228,11 +228,19 @@
   box-shadow: 0 8px 32px -8px rgba(255,107,53,0.18);
   height: 280px;
   position: relative;
+  min-height: 280px;
 }
 #ozkartal-map {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 280px;
   background: #0a0a12;
+  position: relative;
+}
+.maplibregl-canvas-container,
+.maplibregl-canvas { width: 100% !important; height: 100% !important; }
+@media (max-width: 768px) {
+  .map-wrap { height: 240px; min-height: 240px; }
 }
 /* MapLibre attribution styling */
 .maplibregl-ctrl-attrib {
@@ -392,53 +400,98 @@
     }, 3000);
   });
 
-  /* ─── MapLibre map: ÖzKartal location in Elazığ ─── */
+  /* ─── MapLibre map: lazy init via IntersectionObserver ─── */
+  let mapTries = 0;
   function initOzMap() {
     const ml = (window as any).maplibregl;
-    if (!ml) { setTimeout(initOzMap, 200); return; }
+    if (!ml) {
+      if (mapTries++ < 50) setTimeout(initOzMap, 250);
+      return;
+    }
     const el = document.getElementById('ozkartal-map');
     if (!el || (el as any).__inited) return;
     (el as any).__inited = true;
 
-    // Read admin config for coords, fallback to Elazığ city center
     let cfg: any = {};
     try { cfg = JSON.parse(localStorage.getItem('oz-config') || '{}'); } catch {}
     const lng = Number(cfg.mapLng) || 39.2272;
     const lat = Number(cfg.mapLat) || 38.6810;
 
-    // Update Google Maps "Open in" link
     const gmapsBtn = document.getElementById('map-open-gmaps') as HTMLAnchorElement;
     if (gmapsBtn) {
       gmapsBtn.href = cfg.mapsLink || `https://www.google.com/maps?q=${lat},${lng}`;
     }
 
-    const map = new ml.Map({
-      container: 'ozkartal-map',
-      style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-      center: [lng, lat],
-      zoom: 13.5,
-      attributionControl: { compact: true },
-      cooperativeGestures: false,
-    });
+    try {
+      const map = new ml.Map({
+        container: 'ozkartal-map',
+        style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+        center: [lng, lat],
+        zoom: 13.5,
+        attributionControl: { compact: true },
+        cooperativeGestures: false,
+        // Mobile optimizations
+        antialias: false,
+        maxZoom: 18,
+        minZoom: 8,
+      });
 
-    map.addControl(new ml.NavigationControl({ showCompass: false }), 'top-right');
+      map.addControl(new ml.NavigationControl({ showCompass: false }), 'top-right');
 
-    map.on('load', () => {
-      const markerEl = document.createElement('div');
-      markerEl.className = 'oz-marker';
-      const popup = new ml.Popup({ offset: 22, closeButton: false }).setHTML(
-        `<strong data-cfg="logoOz">Öz</strong><strong data-cfg="logoRest">Kartal</strong> <span style="color:#a3a3a3">İletişim</span><br/>
-         <span style="font-size:0.78rem;color:rgba(255,255,255,0.7)" data-cfg="address">${cfg.address || 'Elazığ, Türkiye'}</span><br/>
-         <span style="font-size:0.72rem;color:rgba(255,107,53,0.9)" data-cfg="hours">${cfg.hours || 'Pzt-Cmt: 09:00 - 19:00'}</span>`
-      );
-      new ml.Marker({ element: markerEl }).setLngLat([lng, lat]).setPopup(popup).addTo(map);
-      popup.addTo(map).setLngLat([lng, lat]);
-    });
+      map.on('load', () => {
+        // Resize fix: forces canvas to actual container size
+        map.resize();
+        const markerEl = document.createElement('div');
+        markerEl.className = 'oz-marker';
+        const popup = new ml.Popup({ offset: 22, closeButton: false }).setHTML(
+          `<strong>Öz</strong><strong>Kartal</strong> <span style="color:#a3a3a3">İletişim</span><br/>
+           <span style="font-size:0.78rem;color:rgba(255,255,255,0.7)">${cfg.address || 'Elazığ, Türkiye'}</span><br/>
+           <span style="font-size:0.72rem;color:rgba(255,107,53,0.9)">${cfg.hours || 'Pzt-Cmt: 09:00 - 19:00'}</span>`
+        );
+        new ml.Marker({ element: markerEl }).setLngLat([lng, lat]).setPopup(popup).addTo(map);
+        popup.addTo(map).setLngLat([lng, lat]);
+      });
+
+      // Resize when window changes (mobile orientation)
+      window.addEventListener('resize', () => setTimeout(() => map.resize(), 100), { passive: true });
+    } catch (err) {
+      console.error('MapLibre init failed:', err);
+      (el as any).__inited = false;
+      // Fallback: show static fallback
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;padding:20px;text-align:center">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.6">
+            <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0L6.343 16.657a8 8 0 1111.314 0z"/>
+            <circle cx="12" cy="11" r="3"/>
+          </svg>
+          <p style="color:rgba(255,255,255,0.7);font-size:0.86rem">Harita yüklenemedi.<br/>
+          <a href="${cfg.mapsLink || `https://www.google.com/maps?q=${lat},${lng}`}" target="_blank" rel="noopener noreferrer" style="color:#FF6B35;text-decoration:underline">Google Maps'te Aç</a></p>
+        </div>`;
+    }
+  }
+
+  // Use IntersectionObserver: init when contact section becomes visible
+  function setupMapObserver() {
+    const target = document.getElementById('ozkartal-map');
+    if (!target) return;
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            initOzMap();
+            io.disconnect();
+          }
+        });
+      }, { rootMargin: '200px' });
+      io.observe(target);
+    } else {
+      initOzMap();
+    }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initOzMap);
+    document.addEventListener('DOMContentLoaded', setupMapObserver);
   } else {
-    initOzMap();
+    setupMapObserver();
   }
 </script>

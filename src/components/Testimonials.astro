@@ -112,11 +112,14 @@ const allCols = [col1, col2, col3];
   to   { transform: translateY(-50%); }
 }
 
-/* Mobile: pause animation, allow native scroll */
+/* Mobile: keep auto-scroll, slower duration, single column */
 @media (max-width: 768px) {
-  .columns-wrap { max-height: 480px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  .scroll-track { animation: none !important; transform: none !important; }
+  .columns-wrap { max-height: 460px; padding: 0 16px; }
   .scroll-col { max-width: 100%; }
+  .scroll-track {
+    /* Force slower duration on mobile (override inline style) */
+    animation-duration: 60s !important;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .scroll-track { animation: none !important; }
