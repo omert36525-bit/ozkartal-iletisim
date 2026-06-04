@@ -9,7 +9,6 @@
     <spline-viewer
       id="spline-scene"
       url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-      events-target="global"
       loading-anim-type="none">
     </spline-viewer>
     <!-- Watermark masks (Spline logo bottom-right + any overlay) -->
@@ -385,22 +384,30 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
     flex-direction: column;
     justify-content: flex-end;
     padding-bottom: 0;
+    /* Allow vertical scrolling to pass through the hero */
+    touch-action: pan-y;
   }
-  /* Robot fills top half */
+  /* Robot fills top half — NO pointer events so scroll works */
   .spline-bg {
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 58vh;
+    height: 58svh;
     bottom: auto;
     overflow: hidden;
+    pointer-events: none;   /* ← CRITICAL: lets scroll pass through */
   }
-  .spline-poster { height: 58vh !important; bottom: auto !important; }
-  spline-viewer { height: 58vh !important; width: 100% !important; }
+  .spline-poster { height: 58svh !important; bottom: auto !important; }
+  spline-viewer {
+    height: 58svh !important;
+    width: 100% !important;
+    pointer-events: none !important;  /* ← CRITICAL: touch events pass through */
+  }
   .spline-watermark-mask {
     width: 180px !important;
     height: 60px !important;
-    top: calc(58vh - 60px) !important;
+    top: calc(58svh - 60px) !important;
     bottom: auto !important;
+    pointer-events: none;
   }
 
   /* Hero text positioned BELOW the robot */
@@ -428,7 +435,7 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
       linear-gradient(180deg, rgba(6,6,12,0) 0%, rgba(6,6,12,0.2) 50%, rgba(6,6,12,0.6) 100%);
   }
   .hero-content {
-    padding-top: 56vh;
+    padding-top: 56svh;
     padding-bottom: 50px;
     padding-left: 20px;
     padding-right: 20px;
