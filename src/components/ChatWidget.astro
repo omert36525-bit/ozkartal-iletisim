@@ -99,7 +99,7 @@
   inset: -8px;
   border-radius: 50%;
   border: 2px solid rgba(255,107,53,0.4);
-  animation: bubble-ring 2.5s ease-out infinite;
+  animation: bubble-ring 4.5s ease-out infinite;
   pointer-events: none;
 }
 @keyframes bubble-ring {
@@ -122,10 +122,10 @@
   display: flex; align-items: center; justify-content: center;
   color: #fff;
   border: 2px solid #06060c;
-  animation: badge-pulse 2.5s ease-in-out infinite;
+  animation: badge-pulse 5s ease-in-out infinite;
 }
 .chat-bubble.open .chat-badge { display: none; }
-@keyframes badge-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+@keyframes badge-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
 
 /* PREBUBBLE (auto-greeting outside chat) */
 .chat-prebubble {
@@ -212,9 +212,9 @@
   width: 7px; height: 7px;
   background: #22c55e; border-radius: 50%;
   box-shadow: 0 0 8px #22c55e;
-  animation: dot-pulse 2s ease-in-out infinite;
+  animation: dot-pulse 4s ease-in-out infinite;
 }
-@keyframes dot-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+@keyframes dot-pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
 .chat-close-btn {
   background: none; border: none; color: rgba(255,255,255,0.55);
   cursor: pointer; padding: 6px; border-radius: 8px;

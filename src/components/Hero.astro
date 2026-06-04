@@ -6,6 +6,18 @@
   <div class="spline-bg">
     <!-- Static poster: renders instantly while Spline loads behind it -->
     <div class="spline-poster" id="spline-poster" aria-hidden="true"></div>
+
+    <!-- Mobile static robot image (always loads on mobile, no JS dependency) -->
+    <img
+      class="mobile-robot"
+      src="https://images.pexels.com/photos/8566472/pexels-photo-8566472.jpeg?auto=compress&cs=tinysrgb&w=800&h=900&fit=crop&dpr=2"
+      alt="Teknik servis robotu"
+      loading="eager"
+      fetchpriority="high"
+      width="800"
+      height="900"
+    />
+
     <spline-viewer
       id="spline-scene"
       url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
@@ -128,6 +140,11 @@ spline-viewer {
   transition: opacity 0.8s ease;
 }
 spline-viewer.loaded { opacity: 1; }
+
+/* Mobile static robot image — hidden on desktop */
+.mobile-robot {
+  display: none;
+}
 
 /* Spline watermark mask — bottom right "Built with Spline" badge — opaque cover */
 .spline-watermark-mask {
@@ -284,12 +301,12 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
   width: 6px; height: 6px;
   background: #FF6B35;
   border-radius: 50%;
-  box-shadow: 0 0 12px #FF6B35;
-  animation: pulse-dot 2s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(255,107,53,0.8);
+  animation: pulse-dot 4.5s ease-in-out infinite;
 }
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 12px #FF6B35; }
-  50% { opacity: 0.5; transform: scale(0.7); box-shadow: 0 0 4px #FF6B35; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.65; transform: scale(0.85); }
 }
 
 .hero-title {
@@ -367,7 +384,7 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
 .scroll-line {
   width: 1px; height: 36px;
   background: linear-gradient(to bottom, rgba(255,107,53,0.9), transparent);
-  animation: scroll-pulse 2s ease-in-out infinite;
+  animation: scroll-pulse 3.5s ease-in-out infinite;
 }
 @keyframes scroll-pulse {
   0%   { transform: scaleY(0.4); transform-origin: top; opacity: 0.3; }
@@ -375,8 +392,8 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
   100% { transform: scaleY(0.4); transform-origin: bottom; opacity: 0.3; }
 }
 
-/* Mobile: hero layout — robot stays, but lighter overlays */
-@media (max-width: 767px) {
+/* Mobile: hero layout — STATIC IMAGE robot, no Spline overhead */
+@media (max-width: 900px) {
   .hero {
     min-height: 100dvh;
     display: flex;
@@ -384,21 +401,41 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
     justify-content: flex-end;
     padding-bottom: 0;
   }
-  /* Robot fills top half, text bottom half */
+  /* Hide Spline + watermark mask on mobile, use static image */
+  spline-viewer { display: none !important; }
+  .spline-watermark-mask { display: none !important; }
+
+  /* Robot image fills top half */
   .spline-bg {
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 55vh;
+    height: 58vh;
     bottom: auto;
+    overflow: hidden;
   }
-  /* Mobile-friendly poster sizing */
-  .spline-poster, .spline-watermark-mask { height: 55vh !important; bottom: auto !important; }
-  .spline-watermark-mask {
-    width: 200px;
-    height: 70px !important;
-    top: calc(55vh - 70px) !important;
+  .spline-poster { height: 58vh !important; bottom: auto !important; }
+
+  .mobile-robot {
+    display: block !important;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 360px;
+    height: auto;
+    max-height: 50vh;
+    object-fit: contain;
+    z-index: 2;
+    /* Subtle float animation */
+    animation: robot-float 6s ease-in-out infinite;
+    filter: drop-shadow(0 0 60px rgba(255,107,53,0.55))
+            drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+    border-radius: 18px;
   }
-  spline-viewer { height: 55vh !important; }
+  @keyframes robot-float {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50%      { transform: translate(-50%, -52%) scale(1.02); }
+  }
 
   /* Hero text positioned BELOW the robot */
   .hero-left-fade {
@@ -425,7 +462,7 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
       linear-gradient(180deg, rgba(6,6,12,0) 0%, rgba(6,6,12,0.2) 50%, rgba(6,6,12,0.6) 100%);
   }
   .hero-content {
-    padding-top: 50vh;
+    padding-top: 56vh;
     padding-bottom: 50px;
     text-align: center;
     max-width: 100%;
