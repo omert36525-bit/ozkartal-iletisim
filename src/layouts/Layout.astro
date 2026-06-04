@@ -87,13 +87,31 @@ const ogImage = `${siteUrl}/og-image.jpg`;
       rel="stylesheet"
     />
 
-    <!-- ─── Spline aggressive preload (instant robot on production) ─── -->
+    <!-- ─── Spline preload (DESKTOP ONLY — mobile skipped for performance) ─── -->
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
     <link rel="preconnect" href="https://prod.spline.design" crossorigin />
-    <link rel="modulepreload" href="https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js" crossorigin />
-    <link rel="preload" href="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" as="fetch" crossorigin fetchpriority="high" />
-    <!-- Load spline-viewer script as early as possible (in <head>) -->
-    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js" crossorigin></script>
+    <!-- Conditional Spline loader: only on desktop -->
+    <script is:inline>
+      (function() {
+        var isMobile = window.matchMedia('(max-width: 900px)').matches
+                    || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+        var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (isMobile || reducedMotion) return;
+        // Desktop: preload + load Spline runtime
+        var pre = document.createElement('link');
+        pre.rel = 'preload';
+        pre.href = 'https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode';
+        pre.as = 'fetch';
+        pre.crossOrigin = 'anonymous';
+        pre.setAttribute('fetchpriority', 'high');
+        document.head.appendChild(pre);
+        var script = document.createElement('script');
+        script.type = 'module';
+        script.src = 'https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js';
+        script.crossOrigin = 'anonymous';
+        document.head.appendChild(script);
+      })();
+    </script>
 
     <!-- ─── Security meta ─── -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />

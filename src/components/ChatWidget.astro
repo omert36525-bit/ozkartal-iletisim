@@ -77,17 +77,21 @@
 <style>
 .chat-bubble {
   position: fixed;
-  right: 24px; bottom: 24px;
-  z-index: 999;
-  width: 58px; height: 58px;
+  right: 20px; bottom: 20px;
+  z-index: 9999;
+  width: 56px; height: 56px;
   border-radius: 50%;
   background: linear-gradient(135deg, #FF6B35 0%, #F59E0B 100%);
   border: none;
   cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 12px 32px rgba(255,107,53,0.5), 0 4px 12px rgba(0,0,0,0.4);
   transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
   color: #fff;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 .chat-bubble::before {
   content: '';
@@ -360,10 +364,31 @@
 .chat-send:hover { transform: scale(1.06); box-shadow: 0 10px 24px rgba(255,107,53,0.55); }
 .chat-send:active { transform: scale(0.96); }
 
-@media (max-width: 420px) {
-  .chat-window { right: 12px; bottom: 84px; width: calc(100vw - 24px); }
-  .chat-bubble { right: 16px; bottom: 16px; }
-  .chat-prebubble { right: 82px; bottom: 32px; max-width: 200px; font-size: 0.82rem; }
+/* Mobile — pause ring animation, ensure visibility */
+@media (max-width: 768px) {
+  .chat-window {
+    right: 8px; bottom: 76px;
+    width: calc(100vw - 16px);
+    max-height: 70vh;
+  }
+  .chat-bubble {
+    right: 14px; bottom: 14px;
+    width: 54px; height: 54px;
+  }
+  .chat-bubble::before {
+    /* Disable pulsing ring on mobile — saves GPU */
+    animation: none !important;
+    display: none;
+  }
+  .chat-prebubble {
+    right: 76px; bottom: 24px;
+    max-width: 180px;
+    font-size: 0.78rem;
+    padding: 10px 32px 10px 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-bubble::before { animation: none !important; }
 }
 </style>
 

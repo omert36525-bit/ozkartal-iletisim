@@ -233,3 +233,36 @@ img { max-width: 100%; display: block; }
   .reveal { transition: none !important; opacity: 1; transform: none !important; }
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ─── MOBILE PERFORMANCE ─── */
+@media (max-width: 768px) {
+  html { scroll-behavior: auto; } /* native smooth scroll causes jank on low-end */
+  body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+  /* Off-screen section virtualization */
+  main > section {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 800px;
+  }
+  /* Reveal faster on mobile */
+  .reveal {
+    transition-duration: 0.4s !important;
+    transform: translateY(12px);
+  }
+  /* Disable hover-triggered transforms (touch devices) */
+  .btn-primary:hover, .btn-outline:hover, .card:hover,
+  .testimonial-card:hover, .review-card:hover,
+  .contact-item:hover, .whatsapp-btn:hover {
+    transform: none !important;
+  }
+  /* Section padding tighter on mobile */
+  .section-pad,
+  .services-section, .pricing-section, .gallery-section,
+  .testimonials-section, .faq-section, .contact-section,
+  .how-section, .stats-section, .drone-section {
+    padding-top: 64px !important;
+    padding-bottom: 64px !important;
+  }
+}

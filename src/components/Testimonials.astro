@@ -37,7 +37,7 @@ const allCols = [col1, col2, col3];
   <div class="columns-wrap">
     {allCols.map((col, ci) => (
       <div class={`scroll-col ${ci === 1 ? 'hidden-mobile' : ''} ${ci === 2 ? 'hidden-tablet' : ''}`}>
-        <div class="scroll-track" style={`animation-duration:${14 + ci * 4}s`}>
+        <div class="scroll-track" style={`animation-duration:${45 + ci * 12}s`}>
           {[...col, ...col].map((r, i) => {
             const globalIdx = ci * 3 + (i % 3);
             return (
@@ -104,9 +104,22 @@ const allCols = [col1, col2, col3];
   animation: scroll-up linear infinite;
   will-change: transform;
 }
+.columns-wrap:hover .scroll-track,
+.scroll-track:hover { animation-play-state: paused; }
+
 @keyframes scroll-up {
   from { transform: translateY(0); }
   to   { transform: translateY(-50%); }
+}
+
+/* Mobile: pause animation, allow native scroll */
+@media (max-width: 768px) {
+  .columns-wrap { max-height: 480px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .scroll-track { animation: none !important; transform: none !important; }
+  .scroll-col { max-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-track { animation: none !important; }
 }
 
 .review-card {

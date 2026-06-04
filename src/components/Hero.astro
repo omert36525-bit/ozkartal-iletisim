@@ -236,12 +236,39 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
   pointer-events: none;
   background:
     radial-gradient(ellipse 600px 700px at 75% 50%, rgba(40,30,40,0.85) 0%, transparent 60%),
-    radial-gradient(ellipse 500px 600px at 80% 60%, rgba(255,107,53,0.20) 0%, transparent 55%),
+    radial-gradient(ellipse 500px 600px at 80% 60%, rgba(255,107,53,0.22) 0%, transparent 55%),
     radial-gradient(ellipse 70% 80% at 50% 50%, rgba(20,20,30,0.7) 0%, #06060c 80%);
   transition: opacity 0.6s ease;
   opacity: 1;
 }
 .spline-poster.hidden { opacity: 0; }
+
+/* Mobile poster — richer fallback when Spline removed */
+.spline-poster.mobile-permanent {
+  background:
+    /* Circuit board pattern dots */
+    radial-gradient(circle at 80% 20%, rgba(255,107,53,0.30) 0%, transparent 14%),
+    radial-gradient(circle at 90% 75%, rgba(245,158,11,0.20) 0%, transparent 18%),
+    radial-gradient(circle at 65% 55%, rgba(255,140,66,0.18) 0%, transparent 25%),
+    /* Base atmospheric */
+    radial-gradient(ellipse 100% 80% at 75% 50%, rgba(40,30,40,0.6) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 70% at 50% 50%, rgba(20,20,30,0.5) 0%, #06060c 85%);
+}
+/* Soft animated glow on mobile poster — cheap GPU */
+.spline-poster.mobile-permanent::before {
+  content: '';
+  position: absolute;
+  top: 30%; right: 8%;
+  width: 60%; height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,107,53,0.18) 0%, transparent 65%);
+  filter: blur(40px);
+  animation: poster-pulse 6s ease-in-out infinite;
+}
+@keyframes poster-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50%      { transform: scale(1.1); opacity: 1; }
+}
 
 /* Content */
 .hero-content {
@@ -348,16 +375,35 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
   100% { transform: scaleY(0.4); transform-origin: bottom; opacity: 0.3; }
 }
 
-/* Mobile: less aggressive left-fade so Spline shows behind text */
+/* Mobile: simplify hero — no expensive blur, smaller blob */
 @media (max-width: 767px) {
   .hero-left-fade {
     background: linear-gradient(
       180deg,
-      rgba(6,6,12,0.85) 0%,
-      rgba(6,6,12,0.55) 40%,
-      rgba(6,6,12,0.4) 100%
+      rgba(6,6,12,0.55) 0%,
+      rgba(6,6,12,0.35) 40%,
+      rgba(6,6,12,0.55) 100%
     );
   }
+  .spotlight { display: none; }
+  .hero-blob {
+    width: 280px !important;
+    height: 280px !important;
+    filter: blur(60px) !important;
+    animation: none !important;
+    top: 30% !important;
+    right: -10% !important;
+  }
+  .hero-grade { display: none; }
+  .hero-content {
+    padding-top: 100px;
+    padding-bottom: 60px;
+    text-align: center;
+  }
+  .hero-title { font-size: clamp(2rem, 9vw, 2.8rem) !important; }
+  .hero-sub { font-size: 0.92rem; }
+  .hero-ctas { justify-content: center; }
+  .hero-badges { justify-content: center; }
 }
 </style>
 
@@ -385,10 +431,19 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
     }
   }
 
-  /* ─── Spline scene load handler ───────────────────────────── */
+  /* ─── Spline scene — DISABLE on mobile / low-end devices ─── */
+  const isMobile = window.matchMedia('(max-width: 900px)').matches
+                 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  const isLowEnd = (navigator as any).hardwareConcurrency && (navigator as any).hardwareConcurrency <= 4;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const splineEl: any = document.getElementById('spline-scene');
   const poster = document.getElementById('spline-poster');
-  if (splineEl) {
+
+  if (isMobile || reducedMotion) {
+    // Mobile/touch: remove Spline entirely → use poster only
+    splineEl?.remove();
+    poster?.classList.add('mobile-permanent');
+  } else if (splineEl) {
     splineEl.addEventListener('load', () => {
       splineEl.classList.add('loaded');
       poster?.classList.add('hidden');
@@ -397,7 +452,7 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
       poster?.classList.remove('hidden');
     });
     // safety fallback
-    setTimeout(() => splineEl.classList.add('loaded'), 5000);
-    setTimeout(() => poster?.classList.add('hidden'), 5200);
+    setTimeout(() => splineEl.classList.add('loaded'), 4000);
+    setTimeout(() => poster?.classList.add('hidden'), 4200);
   }
 </script>

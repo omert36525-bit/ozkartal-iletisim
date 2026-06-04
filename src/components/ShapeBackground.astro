@@ -238,4 +238,33 @@ main > .hero, .hero {
 .footer {
   background: linear-gradient(180deg, rgba(6,6,12,0.82) 0%, rgba(6,6,12,0.95) 100%) !important;
 }
+
+/* ─── MOBILE OPTIMIZATION ─── Disable expensive effects on small screens */
+@media (max-width: 768px) {
+  /* Hide expensive shape ribbons on mobile — keep only base gradient */
+  .elegant-shape,
+  .shape-noise { display: none !important; }
+  /* Reduce blur radius (very GPU expensive on mobile) */
+  .bg-radial-1, .bg-radial-2, .bg-radial-3 {
+    filter: blur(40px) !important;
+    animation: none !important;
+  }
+  .bg-radial-1 { width: 90vw; height: 50vh; top: -10vh; right: -15vw; }
+  .bg-radial-2 { display: none; }
+  .bg-radial-3 { display: none; }
+
+  /* Lighter section overlay → less compositing work */
+  main > section:not(.hero) {
+    background: #0a0a14 !important;
+  }
+  main > section:not(.hero)::before,
+  main > section:not(.hero)::after { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .elegant-shape,
+  .bg-radial-1, .bg-radial-2, .bg-radial-3 {
+    animation: none !important;
+  }
+}
 </style>
