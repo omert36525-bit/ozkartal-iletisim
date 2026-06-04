@@ -87,9 +87,18 @@ const ogImage = `${siteUrl}/og-image.jpg`;
       rel="stylesheet"
     />
 
-    <!-- ─── Spline runtime — load IMMEDIATELY on all devices ─── -->
+    <!-- ─── Spline runtime — SADECE masaüstünde yükle ─── -->
+    <!-- Mobilde Spline JS global touchmove listener kaydedip scroll'u engelliyordu -->
     <link rel="preconnect" href="https://prod.spline.design" crossorigin />
-    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js"></script>
+    <script is:inline>
+      // 900px altı cihazlarda Spline hiç yüklenmesin → scroll serbest
+      if (typeof window !== 'undefined' && window.innerWidth > 900) {
+        var _sp = document.createElement('script');
+        _sp.type = 'module';
+        _sp.src = 'https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js';
+        document.head.appendChild(_sp);
+      }
+    </script>
 
     <!-- ─── Security meta ─── -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
