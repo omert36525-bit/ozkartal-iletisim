@@ -2,26 +2,15 @@
 ---
 
 <section class="hero" aria-label="Ana banner">
-  <!-- Fullscreen Spline 3D background — with instant gradient poster fallback -->
+  <!-- Fullscreen Spline 3D background -->
   <div class="spline-bg">
-    <!-- Static poster: renders instantly while Spline loads behind it -->
+    <!-- Static poster: renders instantly while Spline loads -->
     <div class="spline-poster" id="spline-poster" aria-hidden="true"></div>
-
-    <!-- Mobile static robot image (always loads on mobile, no JS dependency) -->
-    <img
-      class="mobile-robot"
-      src="https://images.pexels.com/photos/8566472/pexels-photo-8566472.jpeg?auto=compress&cs=tinysrgb&w=800&h=900&fit=crop&dpr=2"
-      alt="Teknik servis robotu"
-      loading="eager"
-      fetchpriority="high"
-      width="800"
-      height="900"
-    />
-
     <spline-viewer
       id="spline-scene"
       url="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-      events-target="global">
+      events-target="global"
+      loading-anim-type="none">
     </spline-viewer>
     <!-- Watermark masks (Spline logo bottom-right + any overlay) -->
     <div class="spline-watermark-mask"></div>
@@ -141,10 +130,6 @@ spline-viewer {
 }
 spline-viewer.loaded { opacity: 1; }
 
-/* Mobile static robot image — hidden on desktop */
-.mobile-robot {
-  display: none;
-}
 
 /* Spline watermark mask — bottom right "Built with Spline" badge — opaque cover */
 .spline-watermark-mask {
@@ -301,12 +286,12 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
   width: 6px; height: 6px;
   background: #FF6B35;
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255,107,53,0.8);
-  animation: pulse-dot 4.5s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(255,107,53,0.7);
+  animation: pulse-dot 6s ease-in-out infinite;
 }
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.65; transform: scale(0.85); }
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.7; }
 }
 
 .hero-title {
@@ -392,7 +377,7 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
   100% { transform: scaleY(0.4); transform-origin: bottom; opacity: 0.3; }
 }
 
-/* Mobile: hero layout — STATIC IMAGE robot, no Spline overhead */
+/* Mobile: hero layout — Spline robot fills top half, text below */
 @media (max-width: 900px) {
   .hero {
     min-height: 100dvh;
@@ -401,11 +386,7 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
     justify-content: flex-end;
     padding-bottom: 0;
   }
-  /* Hide Spline + watermark mask on mobile, use static image */
-  spline-viewer { display: none !important; }
-  .spline-watermark-mask { display: none !important; }
-
-  /* Robot image fills top half */
+  /* Robot fills top half */
   .spline-bg {
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -414,27 +395,12 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
     overflow: hidden;
   }
   .spline-poster { height: 58vh !important; bottom: auto !important; }
-
-  .mobile-robot {
-    display: block !important;
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    max-width: 360px;
-    height: auto;
-    max-height: 50vh;
-    object-fit: contain;
-    z-index: 2;
-    /* Subtle float animation */
-    animation: robot-float 6s ease-in-out infinite;
-    filter: drop-shadow(0 0 60px rgba(255,107,53,0.55))
-            drop-shadow(0 20px 40px rgba(0,0,0,0.6));
-    border-radius: 18px;
-  }
-  @keyframes robot-float {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50%      { transform: translate(-50%, -52%) scale(1.02); }
+  spline-viewer { height: 58vh !important; width: 100% !important; }
+  .spline-watermark-mask {
+    width: 180px !important;
+    height: 60px !important;
+    top: calc(58vh - 60px) !important;
+    bottom: auto !important;
   }
 
   /* Hero text positioned BELOW the robot */
@@ -464,6 +430,8 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
   .hero-content {
     padding-top: 56vh;
     padding-bottom: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
     text-align: center;
     max-width: 100%;
   }
