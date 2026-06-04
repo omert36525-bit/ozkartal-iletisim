@@ -413,15 +413,28 @@
     <div id="panel-security" class="panel">
       <div class="section-card">
         <h3>🛡 Güvenlik & Sistem</h3>
+        <h4>🔒 Kimlik Doğrulama</h4>
         <div class="security-stat"><span>SHA-256 şifre koruması</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>Constant-time hash karşılaştırma</span><span>✓ Aktif</span></div>
         <div class="security-stat"><span>Rate limiting (5 hata = 60sn kilit)</span><span>✓ Aktif</span></div>
         <div class="security-stat"><span>Honeypot bot koruması</span><span>✓ Aktif</span></div>
-        <div class="security-stat"><span>noindex / nofollow</span><span>✓ Aktif</span></div>
-        <div class="security-stat"><span>X-Content-Type-Options</span><span>✓ Aktif</span></div>
-        <div class="security-stat"><span>Referrer-Policy: no-referrer</span><span>✓ Aktif</span></div>
-        <div class="security-stat"><span>Permissions-Policy (kamera/mikrofon)</span><span>✓ Reddedildi</span></div>
         <div class="security-stat" id="stat-attempts"><span>Başarısız giriş denemeleri</span><span>0</span></div>
         <div class="security-stat" id="stat-lastlogin"><span>Son giriş</span><span>—</span></div>
+
+        <h4>🛡 HTTP Güvenlik Header'ları (Vercel)</h4>
+        <div class="security-stat"><span>HTTPS + HSTS (preload, 2 yıl)</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>Content-Security-Policy (CSP)</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>X-Frame-Options: DENY</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>X-Content-Type-Options: nosniff</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>Referrer-Policy: strict-origin-when-cross-origin</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>Permissions-Policy (kamera/mikrofon/payment)</span><span>✓ Reddedildi</span></div>
+        <div class="security-stat"><span>Cross-Origin-Opener-Policy</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>X-XSS-Protection</span><span>✓ Aktif</span></div>
+
+        <h4>🚫 Erişim Kontrolü</h4>
+        <div class="security-stat"><span>/admin noindex + noarchive</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>/admin no-cache + private</span><span>✓ Aktif</span></div>
+        <div class="security-stat"><span>robots.txt /admin disallow</span><span>✓ Aktif</span></div>
 
         <h4>Şifre Değiştir</h4>
         <p style="font-size:0.76rem;color:var(--text-muted);margin-bottom:12px">Sayfa kapatılınca oturum sıfırlanır. Yeni şifre hash'i kod içinde güncellenir (geliştirici müdahalesi gerekir).</p>

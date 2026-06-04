@@ -627,23 +627,50 @@ form.addEventListener('submit', async (e) => {
   await handleBotReply(msg);
 });
 
-/* ─── AUTO PREBUBBLE GREETING ─── */
-function maybeShowPrebubble() {
+/* ─── SCROLL-BASED PREBUBBLE GREETING ─── */
+function setupPrebubble() {
   if (sessionStorage.getItem('chat-opened')) return;
   if (sessionStorage.getItem('prebubble-dismissed')) return;
   if (window.innerWidth < 480) return;
+
   const cfg = getCfg();
-  const delay = (parseFloat(cfg.chatPrebubbleDelay) || 3.5) * 1000;
   const text = cfg.chatPrebubbleText || 'Merhaba! Size nasıl yardımcı olabilirim? 👋';
-  // Update prebubble text from admin config
   const span = prebubble.querySelector('span');
   if (span) span.textContent = text;
-  setTimeout(() => {
-    if (!bubble.classList.contains('open')) {
-      prebubble.classList.add('show');
-      setTimeout(() => prebubble.classList.remove('show'), 12000);
+
+  let shown = false;
+  function trigger() {
+    if (shown) return;
+    if (bubble.classList.contains('open')) return;
+    if (sessionStorage.getItem('prebubble-dismissed')) return;
+    shown = true;
+    prebubble.classList.add('show');
+    // Auto-hide after 14s
+    setTimeout(() => prebubble.classList.remove('show'), 14000);
+  }
+
+  // Trigger when user scrolls ~70% of page
+  function onScroll() {
+    const scrolled = window.scrollY + window.innerHeight;
+    const total = document.documentElement.scrollHeight;
+    const pct = scrolled / total;
+    if (pct >= 0.65) {
+      trigger();
+      window.removeEventListener('scroll', onScroll);
     }
-  }, delay);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Fallback: if user stays >40s on the page without scrolling much
+  setTimeout(() => {
+    if (!shown && window.scrollY < 100) trigger();
+  }, 40000);
 }
-maybeShowPrebubble();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupPrebubble);
+} else {
+  setupPrebubble();
+}
 </script>

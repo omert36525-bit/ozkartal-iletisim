@@ -40,8 +40,6 @@
   <!-- Ambient glow blob — right side only, no left leak -->
   <div class="hero-blob b1" aria-hidden="true"></div>
 
-  <!-- Floating particles overlay -->
-  <div class="hero-particles" id="hero-particles" aria-hidden="true"></div>
 
   <!-- Foreground content -->
   <div class="container hero-content">
@@ -109,8 +107,10 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: #06060c;
+  /* Opaque so ShapeBackground does NOT leak through hero */
+  background: #06060c !important;
   isolation: isolate;
+  z-index: 1;
 }
 
 /* Fullscreen Spline background */
@@ -188,66 +188,44 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
   );
 }
 
-/* Spotlight SVG */
+/* Spotlight — softer, tighter, behind robot only */
 .spotlight {
   position: absolute;
-  top: -40%;
-  right: -15%;
-  height: 169%;
-  width: 138%;
+  top: -20%;
+  right: -8%;
+  height: 130%;
+  width: 70%;
   z-index: 1;
   pointer-events: none;
   opacity: 0;
   animation: spotlight-in 1.4s 0.2s ease-out forwards;
 }
 @keyframes spotlight-in {
-  0%   { opacity: 0; transform: translate(60px, -40px) scale(0.5); }
+  0%   { opacity: 0; transform: translate(40px, -30px) scale(0.6); }
   100% { opacity: 1; transform: translate(0, 0) scale(1); }
 }
 @media (min-width: 1024px) {
-  .spotlight { width: 84%; }
+  .spotlight { width: 55%; }
 }
 
-/* Ambient blobs */
+/* Single soft glow behind robot */
 .hero-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(110px);
+  filter: blur(140px);
   pointer-events: none;
   z-index: 1;
-  animation: blob-float 14s ease-in-out infinite;
+  animation: blob-float 18s ease-in-out infinite;
 }
 .b1 {
-  width: 640px; height: 640px;
-  background: radial-gradient(circle, rgba(255,107,53,0.28), transparent 70%);
-  top: -180px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(255,107,53,0.22), transparent 70%);
+  top: 20%; right: 5%;
   animation-delay: 0s;
 }
 @keyframes blob-float {
-  0%, 100% { transform: translateY(0) scale(1); }
-  33%  { transform: translateY(-30px) scale(1.05); }
-  66%  { transform: translateY(15px) scale(0.96); }
-}
-
-/* Floating CSS particles */
-.hero-particles {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  overflow: hidden;
-}
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  animation: particle-float linear infinite;
-  opacity: 0;
-}
-@keyframes particle-float {
-  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 0.6; }
-  100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-20px, 20px) scale(1.04); }
 }
 
 /* Poster — visible instantly, fades out when Spline loads */
@@ -383,13 +361,12 @@ spline-viewer { user-select: none; -webkit-user-drag: none; }
 }
 </style>
 
-<!-- Spline web component (no React needed) -->
-<script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js" is:inline></script>
+<!-- Spline script loaded in Layout <head> for faster init -->
 
 <script>
-  /* ─── CSS Floating Particles ───────────────────────────── */
+  /* ─── CSS Floating Particles (disabled — performance) ───── */
   const container = document.getElementById('hero-particles');
-  if (container) {
+  if (container && false) {
     const colors = ['rgba(255,107,53,', 'rgba(245,158,11,', 'rgba(255,140,66,'];
     for (let i = 0; i < 28; i++) {
       const p = document.createElement('div');

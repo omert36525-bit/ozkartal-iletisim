@@ -1,0 +1,17 @@
+{
+  "name": "ÖzKartal İletişim",
+  "short_name": "ÖzKartal",
+  "description": "Elazığ'ın güvenilir teknik servisi. Telefon, drone, elektronik ve araç beyin tamiri.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06060c",
+  "theme_color": "#FF6B35",
+  "lang": "tr-TR",
+  "orientation": "portrait",
+  "categories": ["business", "utilities"],
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/favicon.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "maskable" },
+    { "src": "/favicon.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
